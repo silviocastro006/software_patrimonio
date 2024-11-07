@@ -21,7 +21,7 @@ class _ExcluirState extends State<Excluir> {
   Future<void> _listarProdutos() async {
     const String url = "http://localhost/server/processa_bdCeet.php";
     final Map<String, String> data = {
-      'comando': 'listar',
+      'acao': 'listar',
     };
 
     try {
@@ -34,29 +34,27 @@ class _ExcluirState extends State<Excluir> {
         final responseBody = json.decode(response.body);
         if (responseBody['status'] == 'success') {
           setState(() {
-            _produtos = List<Map<String, dynamic>>.from(responseBody['produtos']);
+            // Filtra os produtos, excluindo os que têm status 'descartado'
+            _produtos = List<Map<String, dynamic>>.from(responseBody['produtos'])
+                .where((produto) => produto['status'] != 'descartado')
+                .toList();
           });
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Erro ao buscar produtos: ${responseBody['message']}'),
-              backgroundColor: Colors.red,
-            ),
-          );
+          _showErrorDialog('Erro ao listar produtos');
         }
       } else {
-        print("Erro ao listar os produtos. Código de resposta: ${response.statusCode}");
+        _showErrorDialog('Falha na comunicação com o servidor');
       }
-    } catch (error) {
-      print("Erro durante a requisição: $error");
+    } catch (e) {
+      _showErrorDialog('Erro ao se conectar com o servidor: $e');
     }
   }
 
-  Future<void> _excluirProduto(int id) async {
+  Future<void> _descartarProduto(int id) async {
     const String url = "http://localhost/server/processa_bdCeet.php";
-    final Map<String, String> data = {
-      'comando': 'deletar',
-      'id': id.toString(),
+    final Map<String, dynamic> data = {
+      'acao': 'descartar',
+      'id': id,
     };
 
     try {
@@ -68,73 +66,105 @@ class _ExcluirState extends State<Excluir> {
       if (response.statusCode == 200) {
         final responseBody = json.decode(response.body);
         if (responseBody['status'] == 'success') {
-          setState(() {
-            _produtos.removeWhere((produto) => produto['id'] == id);
-          });
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Produto excluído com sucesso!'),
-              backgroundColor: Colors.green,
-            ),
-          );
+          _showSuccessDialog(responseBody['message']);
+          _listarProdutos(); // Atualiza a lista após a exclusão
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Erro ao excluir produto: ${responseBody['message']}'),
-              backgroundColor: Colors.red,
-            ),
-          );
+          _showErrorDialog(responseBody['message']);
         }
       } else {
-        print("Erro ao excluir o produto. Código de resposta: ${response.statusCode}");
+        _showErrorDialog('Falha na comunicação com o servidor');
       }
-    } catch (error) {
-      print("Erro durante a requisição de exclusão: $error");
+    } catch (e) {
+      _showErrorDialog('Erro ao se conectar com o servidor: $e');
     }
+  }
+
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Erro'),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showSuccessDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Sucesso'),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Tela de Excluir'),
-        backgroundColor: const Color(0xFF1C3A5C),
+        title: const Text('Excluir Produto'),
+        backgroundColor: const Color(0xFF1C3A5C), // Cor do AppBar semelhante ao main.dart
       ),
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color(0xFF1C3A5C), Color(0xFF004d40), Color(0xFF311B92)],
+            colors: [
+              Color(0xFF1C3A5C),
+              Color(0xFF004d40),
+              Color(0xFF311B92)
+            ], // Cores do gradiente de fundo
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
         ),
-        child: _produtos.isEmpty
-            ? const Center(
-                child: CircularProgressIndicator(),
-              )
-            : ListView.builder(
-                itemCount: _produtos.length,
-                itemBuilder: (context, index) {
-                  final produto = _produtos[index];
-                  return Card(
-                    margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                    child: ListTile(
-                      title: Text(
-                        produto['marca'],
-                        style: const TextStyle(color: Colors.black),
-                      ),
-                      subtitle: Text(
-                        'Modelo: ${produto['modelo']} | Cor: ${produto['cor']}',
-                        style: const TextStyle(color: Colors.black54),
-                      ),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.delete, color: Colors.red),
-                        onPressed: () => _excluirProduto(produto['id']),
-                      ),
-                    ),
-                  );
-                },
+        child: ListView.builder(
+          padding: const EdgeInsets.all(16.0),
+          itemCount: _produtos.length,
+          itemBuilder: (context, index) {
+            final produto = _produtos[index];
+            return Card(
+              color: Colors.white.withOpacity(0.8),
+              margin: const EdgeInsets.symmetric(vertical: 10),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
               ),
+              child: ListTile(
+                title: Text(
+                  produto['marca'],
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                subtitle: Text('Modelo: ${produto['modelo']}'),
+                trailing: IconButton(
+                  icon: Icon(Icons.delete, color: Colors.red),
+                  onPressed: () {
+                    _descartarProduto(produto['id']);
+                  },
+                ),
+              ),
+            );
+          },
+        ),
       ),
     );
   }

@@ -12,7 +12,7 @@ class Menu extends StatelessWidget {
     return MaterialApp(
       title: 'Navegação entre Telas',
       theme: ThemeData(
-        primaryColor: Colors.blue,
+        
       ),
       home: const TelaPrincipal(),
     );
@@ -85,7 +85,7 @@ class TelaPrincipal extends StatelessWidget {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         foregroundColor: Colors.white,
-        backgroundColor: const Color(0xFF388E3C), // Botões principais em verde escuro
+        backgroundColor: const Color(0xFF311B92), // Botões principais em verde escuro
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
         ),

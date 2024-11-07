@@ -13,7 +13,7 @@ class MenuAdm extends StatelessWidget {
     return MaterialApp(
       title: 'Menu Admin',
       theme: ThemeData(
-        primaryColor: Colors.blue,
+       
       ),
       home: const TelaPrincipal(),
     );
@@ -29,7 +29,8 @@ class TelaPrincipal extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Menu Administrador'),
         backgroundColor: Colors.blue,
-        foregroundColor: Colors.white,
+        //foregroundColor: Colors.white,
+        
       ),
       body: Container(
         decoration: const BoxDecoration(
@@ -88,7 +89,7 @@ class TelaPrincipal extends StatelessWidget {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         foregroundColor: Colors.white,
-        backgroundColor: const Color(0xFF388E3C), // Botões principais em verde escuro
+        backgroundColor: const Color(0xFF311B92), // Botões principais em verde escuro
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
         ),

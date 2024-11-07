@@ -16,6 +16,9 @@ class MyApp extends StatelessWidget {
       home: MeuAplicativo(),
       theme: ThemeData(
         primaryColor: Colors.blue,
+        textTheme: const TextTheme(
+          bodyMedium: TextStyle(color: Colors.white), // Definindo a cor padrão do texto
+        ),
       ),
     );
   }
@@ -30,7 +33,7 @@ class MeuAplicativo extends StatelessWidget {
   Future<void> _enviarDados(BuildContext context) async {
     const String url = "http://localhost/server/processa_bdCeet.php";
     final Map<String, String> data = {
-      'comando': 'logar',
+      'acao': 'logar',
       'usuario': _login.text.toUpperCase(),
       'senha': _senha.text.toUpperCase(),
     };
@@ -75,14 +78,13 @@ class MeuAplicativo extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-  decoration: const BoxDecoration(
-  gradient: LinearGradient(
-    colors: [Color(0xFF1C3A5C), Color(0xFF004d40), Color(0xFF311B92)], // Tons mais escuros
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
-  ),
-),
-
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFF1C3A5C), Color(0xFF004d40), Color(0xFF311B92)], // Tons mais escuros
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
         child: Center(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(16.0),
@@ -103,6 +105,7 @@ class MeuAplicativo extends StatelessWidget {
                   const SizedBox(height: 40),
                   TextFormField(
                     controller: _login,
+                    style: const TextStyle(color: Colors.white), // Cor do texto inserido
                     decoration: InputDecoration(
                       labelText: 'Login',
                       labelStyle: const TextStyle(color: Colors.white),
@@ -117,6 +120,7 @@ class MeuAplicativo extends StatelessWidget {
                   const SizedBox(height: 20),
                   TextFormField(
                     controller: _senha,
+                    style: const TextStyle(color: Colors.white), // Cor do texto inserido
                     decoration: InputDecoration(
                       labelText: 'Senha',
                       labelStyle: const TextStyle(color: Colors.white),

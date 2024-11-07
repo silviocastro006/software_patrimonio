@@ -1,6 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'menu.dart'; // Import da tela de menu normal
+import 'menuAdm.dart'; // Import da tela de menu admin
+import 'alterar.dart'; // Import da tela de alterar
 
 class Busca extends StatefulWidget {
   const Busca({Key? key}) : super(key: key);
@@ -22,7 +25,7 @@ class _BuscaState extends State<Busca> {
 
   Future<void> _fetchPatrimonios() async {
     const String url = "http://localhost/server/processa_bdCeet.php";
-    final Map<String, String> data = {'comando': 'listar'};
+    final Map<String, String> data = {'acao': 'listar'};
 
     try {
       final response = await http.post(
@@ -35,7 +38,10 @@ class _BuscaState extends State<Busca> {
         final responseBody = json.decode(response.body);
         if (responseBody['status'] == 'success') {
           setState(() {
-            _patrimonios = List<Map<String, dynamic>>.from(responseBody['produtos']);
+            _patrimonios =
+                List<Map<String, dynamic>>.from(responseBody['produtos'])
+                    .where((patrimonio) => patrimonio['status'] != 'descartado')
+                    .toList();
             _filteredPatrimonios = _patrimonios;
           });
         } else {
@@ -55,21 +61,54 @@ class _BuscaState extends State<Busca> {
   void _filterPatrimonios(String query) {
     setState(() {
       _filteredPatrimonios = _patrimonios.where((patrimonio) {
-        return patrimonio['marca'].toLowerCase().contains(query.toLowerCase()) ||
-               patrimonio['modelo'].toLowerCase().contains(query.toLowerCase()) ||
-               patrimonio['data'].contains(query);
+        bool matchesQuery = patrimonio['marca']
+                .toLowerCase()
+                .contains(query.toLowerCase()) ||
+            patrimonio['modelo'].toLowerCase().contains(query.toLowerCase()) ||
+            patrimonio['data'].contains(query);
+        bool isNotDescartado = patrimonio['status'] != 'descartado';
+        return matchesQuery && isNotDescartado;
       }).toList();
     });
+  }
+
+  void _goToAlterarPage(Map<String, dynamic> patrimonio) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => Alterar(
+          patrimonio: patrimonio, // Passa o patrimônio inteiro, incluindo o ID
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Buscar Patrimônios'),
+        backgroundColor: Colors.blue,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {
+              // Navegação condicional para 'menuAdm' ou 'menu'
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const MenuAdm(),
+                ),
+                (Route<dynamic> route) => false,
+              );
+            },
+          ),
+        ],
+      ),
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors:  [Color(0xFF1C3A5C), Color(0xFF004d40), Color(0xFF311B92)], // A última cor já é um roxo escuro
-            
+            colors: [Color(0xFF1C3A5C), Color(0xFF004d40), Color(0xFF311B92)],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -81,17 +120,19 @@ class _BuscaState extends State<Busca> {
               TextField(
                 controller: _filterController,
                 decoration: InputDecoration(
-                  labelText: 'Filtrar por marca, modelo ou data',
-                  labelStyle: const TextStyle(color: Colors.white),
+                  labelText: 'Filtrar por marca, modelo, data ou status',
+                  labelStyle: const TextStyle(color: Colors.black),
                   fillColor: Colors.white.withOpacity(0.1),
                   filled: true,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
-                    borderSide: const BorderSide(color: Color.fromARGB(255, 0, 0, 0)),
+                    borderSide:
+                        const BorderSide(color: Color.fromARGB(255, 0, 0, 0)),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
-                    borderSide: const BorderSide(color: Color.fromARGB(255, 0, 0, 0)),
+                    borderSide:
+                        const BorderSide(color: Color.fromARGB(255, 0, 0, 0)),
                   ),
                   suffixIcon: IconButton(
                     icon: const Icon(Icons.search, color: Colors.black),
@@ -113,6 +154,7 @@ class _BuscaState extends State<Busca> {
                       margin: const EdgeInsets.symmetric(vertical: 8),
                       elevation: 4,
                       child: ListTile(
+                        onTap: () => _goToAlterarPage(patrimonio),
                         contentPadding: const EdgeInsets.all(8.0),
                         leading: ClipRRect(
                           borderRadius: BorderRadius.circular(10),
@@ -122,9 +164,7 @@ class _BuscaState extends State<Busca> {
                             height: 45,
                             fit: BoxFit.cover,
                             errorBuilder: (context, error, stackTrace) {
-                              print(
-                                  'Erro ao carregar imagem: ${error.toString()} | URL: http://localhost/server/' +
-                                      patrimonio['imagem']);
+                              print('Erro ao carregar imagem: $error');
                               return const Icon(Icons.error);
                             },
                           ),
@@ -133,15 +173,20 @@ class _BuscaState extends State<Busca> {
                           'Marca: ${patrimonio['marca']}',
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                            color: Colors.black,
                           ),
                         ),
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Modelo: ${patrimonio['modelo']}', style: const TextStyle(color: Colors.white)),
-                            Text('Cor: ${patrimonio['cor']}', style: const TextStyle(color: Colors.white)),
-                            Text('Data: ${patrimonio['data']}', style: const TextStyle(color: Colors.white)),
+                            Text('Modelo: ${patrimonio['modelo']}',
+                                style: const TextStyle(color: Colors.black)),
+                            Text('Cor: ${patrimonio['cor']}',
+                                style: const TextStyle(color: Colors.black)),
+                            Text('Data: ${patrimonio['data']}',
+                                style: const TextStyle(color: Colors.black)),
+                            Text('Status: ${patrimonio['status']}',
+                                style: const TextStyle(color: Colors.black)),
                           ],
                         ),
                       ),

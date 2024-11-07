@@ -11,7 +11,7 @@ class InserirFuncionario extends StatelessWidget {
   Future<void> _enviarDados(BuildContext context) async {
     const String url = "http://localhost/server/processa_bdCeet.php";
     final Map<String, String> data = {
-      'comando': 'cadastra',
+      'acao': 'criaUsuario',
       'usuario': _usuario.text.toUpperCase(),
       'senha': _senha.text.toUpperCase(),
     };
