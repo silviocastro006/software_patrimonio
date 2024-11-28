@@ -12,9 +12,7 @@ class MenuAdm extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Menu Admin',
-      theme: ThemeData(
-       
-      ),
+      theme: ThemeData(),
       home: const TelaPrincipal(),
     );
   }
@@ -30,7 +28,6 @@ class TelaPrincipal extends StatelessWidget {
         title: const Text('Menu Administrador'),
         backgroundColor: Colors.blue,
         //foregroundColor: Colors.white,
-        
       ),
       body: Container(
         decoration: const BoxDecoration(
@@ -50,18 +47,21 @@ class TelaPrincipal extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                _buildMenuButton(context, 'Ir para Inserir', Inserir()),
                 const SizedBox(height: 20),
-                _buildMenuButton(context, 'Ir para Buscar', const Busca()),
+                _buildMenuButton(context, 'Ir para Inserir', const Inserir()),
                 const SizedBox(height: 20),
-                _buildMenuButton(context, 'Cadastrar Funcionário', InserirFuncionario()),
+                _buildMenuButton(context, 'Ir para Consulta', const Busca()),
+                const SizedBox(height: 20),
+                _buildMenuButton(
+                    context, 'Cadastrar Funcionário', InserirFuncionario()),
                 const SizedBox(height: 20),
                 _buildMenuButton(context, 'Ir para Excluir', const Excluir()),
                 const SizedBox(height: 20),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.white,
-                    backgroundColor: const Color(0xFF6A1B9A), // Botão 'Sair' em roxo escuro
+                    backgroundColor:
+                        const Color.fromARGB(255, 255, 0, 0), // Botão 'Sair' em roxo escuro
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
@@ -89,12 +89,14 @@ class TelaPrincipal extends StatelessWidget {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         foregroundColor: Colors.white,
-        backgroundColor: const Color(0xFF311B92), // Botões principais em verde escuro
+        backgroundColor:
+            const Color.fromARGB(255, 0, 0, 0), // Botões principais em verde escuro
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
         ),
         padding: const EdgeInsets.symmetric(vertical: 15),
-        minimumSize: const Size(double.infinity, 50), // Responsivo para ocupar toda a largura
+        minimumSize: const Size(
+            double.infinity, 50), // Responsivo para ocupar toda a largura
       ),
       onPressed: () {
         Navigator.push(

@@ -87,7 +87,7 @@ class _BuscaState extends State<Busca> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Buscar Patrimônios'),
+        title: const Text('Consultar Patrimônios'),
         backgroundColor: Colors.blue,
         actions: [
           IconButton(
@@ -154,7 +154,6 @@ class _BuscaState extends State<Busca> {
                       margin: const EdgeInsets.symmetric(vertical: 8),
                       elevation: 4,
                       child: ListTile(
-                        onTap: () => _goToAlterarPage(patrimonio),
                         contentPadding: const EdgeInsets.all(8.0),
                         leading: ClipRRect(
                           borderRadius: BorderRadius.circular(10),
@@ -188,6 +187,19 @@ class _BuscaState extends State<Busca> {
                             Text('Status: ${patrimonio['status']}',
                                 style: const TextStyle(color: Colors.black)),
                           ],
+                        ),
+                        trailing: ElevatedButton(
+                          onPressed: () => _goToAlterarPage(patrimonio),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          child: const Text(
+                            '+ Detalhes',
+                            style: TextStyle(color: Colors.white),
+                          ),
                         ),
                       ),
                     );
