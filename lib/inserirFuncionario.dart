@@ -53,9 +53,22 @@ class InserirFuncionario extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Cadastrar Funcionário'),
-        backgroundColor: Colors.blue,
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(kToolbarHeight),
+        child: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xFF1C3A5C), Color(0xFF004d40), Color(0xFF311B92)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+          child: AppBar(
+            title: const Text('Cadastrar Funcionário', style: TextStyle(color: Colors.white)),
+            backgroundColor: Colors.transparent, // Mantém o fundo transparente para usar o gradiente
+            elevation: 0, // Removendo a sombra do AppBar
+          ),
+        ),
       ),
       body: Container(
         decoration: const BoxDecoration(
@@ -76,10 +89,12 @@ class InserirFuncionario extends StatelessWidget {
                 children: [
                   TextFormField(
                     controller: _usuario,
+                    style: const TextStyle(color: Colors.white), // Texto dentro do campo branco
                     decoration: InputDecoration(
                       labelText: 'Nome',
                       labelStyle: const TextStyle(color: Colors.white),
-                      fillColor: Colors.white.withOpacity(0.1),
+                      fillColor: Colors
+                          .transparent, // Definido como transparente para manter o fundo do campo igual ao da página
                       filled: true,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
@@ -90,10 +105,12 @@ class InserirFuncionario extends StatelessWidget {
                   const SizedBox(height: 16),
                   TextFormField(
                     controller: _senha,
+                    style: const TextStyle(color: Colors.white), // Texto dentro do campo branco
                     decoration: InputDecoration(
                       labelText: 'Senha',
                       labelStyle: const TextStyle(color: Colors.white),
-                      fillColor: Colors.white.withOpacity(0.1),
+                      fillColor: Colors
+                          .transparent, // Definido como transparente para manter o fundo do campo igual ao da página
                       filled: true,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
@@ -107,7 +124,8 @@ class InserirFuncionario extends StatelessWidget {
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,
-                      backgroundColor: const Color(0xFF50E3C2), // Verde claro para o botão
+                      backgroundColor:
+                          const Color(0xFF50E3C2), // Verde claro para o botão
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),

@@ -290,10 +290,10 @@ class _InserirState extends State<Inserir> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF1A1A1A),
+      backgroundColor: const Color.fromARGB(255, 4, 139, 110),
       appBar: AppBar(
         title: const Text('Adicionar Patrimônio'),
-        backgroundColor: const Color(0xFF1A1A1A),
+        backgroundColor: const Color.fromARGB(255, 4, 139, 110),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -336,13 +336,16 @@ class _InserirState extends State<Inserir> {
               }),
             ),
             const SizedBox(height: 10),
-            _buildTextField(_corController, 'Cor'),
+            _buildTextField(_corController, 'Cor',
+                backgroundColor: Colors.green[800]),
             const SizedBox(height: 10),
-            _buildTextField(_codigoController, 'Código'),
+            _buildTextField(_codigoController, 'Código',
+                backgroundColor: Colors.green[800]),
             const SizedBox(height: 10),
             _buildDateField(context),
             const SizedBox(height: 10),
-            _buildTextField(_descricaoController, 'Descrição'),
+            _buildTextField(_descricaoController, 'Descrição',
+                backgroundColor: Colors.green[80]),
             const SizedBox(height: 10),
             _buildFotoPicker(),
             const SizedBox(height: 20),
@@ -350,7 +353,7 @@ class _InserirState extends State<Inserir> {
               onPressed: () => _enviarDados(context),
               child: const Text('Adicionar Patrimônio'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromARGB(255, 0, 0, 0),
+                backgroundColor: const Color.fromARGB(255, 4, 65, 51),
                 foregroundColor:
                     Colors.white, // Define a cor do texto como branca
               ),
@@ -425,7 +428,8 @@ class _InserirState extends State<Inserir> {
     );
   }
 
-  Widget _buildTextField(TextEditingController controller, String label) {
+  Widget _buildTextField(TextEditingController controller, String label,
+      {Color? backgroundColor}) {
     return TextField(
       controller: controller,
       style: const TextStyle(color: Colors.white),
@@ -434,7 +438,7 @@ class _InserirState extends State<Inserir> {
         labelStyle: const TextStyle(color: Colors.white),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0)),
         filled: true,
-        fillColor: Colors.grey[800],
+        fillColor: Colors.green[800],
       ),
     );
   }
@@ -452,7 +456,7 @@ class _InserirState extends State<Inserir> {
               border:
                   OutlineInputBorder(borderRadius: BorderRadius.circular(8.0)),
               filled: true,
-              fillColor: Colors.grey[800],
+              fillColor: Colors.green[800],
             ),
             onTap: () => _selecionarData(context),
           ),
@@ -468,7 +472,7 @@ class _InserirState extends State<Inserir> {
         width: 100,
         height: 100,
         decoration: BoxDecoration(
-          color: Colors.grey[700],
+          color: Colors.green[700],
           borderRadius: BorderRadius.circular(8.0),
         ),
         child: _fotoBase64 == null

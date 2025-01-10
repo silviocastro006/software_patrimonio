@@ -1,9 +1,13 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'main.dart'; // Import da tela de login
 import 'busca.dart';
 import 'inserir.dart';
 import 'excluir.dart';
 import 'inserirFuncionario.dart';
+import 'package:http/http.dart' as http;
+
 
 class MenuAdm extends StatelessWidget {
   const MenuAdm({Key? key}) : super(key: key);
@@ -12,14 +16,36 @@ class MenuAdm extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Menu Admin',
-      theme: ThemeData(),
-      home: const TelaPrincipal(),
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+          selectedItemColor: Colors.blue,
+          unselectedItemColor: Colors.grey,
+          backgroundColor: Colors.white,
+        ),
+      ),
+      home: const TelaPrincipalAdm(),
     );
   }
 }
 
-class TelaPrincipal extends StatelessWidget {
-  const TelaPrincipal({Key? key}) : super(key: key);
+class TelaPrincipalAdm extends StatefulWidget {
+  const TelaPrincipalAdm({Key? key}) : super(key: key);
+
+  @override
+  _TelaPrincipalAdmState createState() => _TelaPrincipalAdmState();
+}
+
+class _TelaPrincipalAdmState extends State<TelaPrincipalAdm> {
+  int _currentIndex = 0;
+
+  final List<Widget> _pages = [
+    const ResumoPatrimonio(),
+    const Inserir(),
+    const Busca(),
+    InserirFuncionario(),
+    const Excluir(),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -27,84 +53,183 @@ class TelaPrincipal extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Menu Administrador'),
         backgroundColor: Colors.blue,
-        //foregroundColor: Colors.white,
+        foregroundColor: Colors.white,
       ),
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Color(0xFF1C3A5C),
-              Color(0xFF004d40),
-              Color(0xFF311B92)
-            ], // Tons mais escuros
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+      body: _pages[_currentIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentIndex,
+        onTap: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.dashboard),
+            label: 'Resumo',
           ),
-        ),
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                const SizedBox(height: 20),
-                _buildMenuButton(context, 'Ir para Inserir', const Inserir()),
-                const SizedBox(height: 20),
-                _buildMenuButton(context, 'Ir para Consulta', const Busca()),
-                const SizedBox(height: 20),
-                _buildMenuButton(
-                    context, 'Cadastrar Funcionário', InserirFuncionario()),
-                const SizedBox(height: 20),
-                _buildMenuButton(context, 'Ir para Excluir', const Excluir()),
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    backgroundColor:
-                        const Color.fromARGB(255, 255, 0, 0), // Botão 'Sair' em roxo escuro
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    padding: const EdgeInsets.symmetric(vertical: 15),
-                    minimumSize: const Size(double.infinity, 50),
-                  ),
-                  onPressed: () {
-                    Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(builder: (context) => const MyApp()),
-                      (Route<dynamic> route) => false,
-                    );
-                  },
-                  child: const Text('Sair'),
-                ),
-              ],
-            ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.add),
+            label: 'Inserir',
           ),
-        ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.search),
+            label: 'Consulta',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person_add),
+            label: 'Funcionário',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.delete),
+            label: 'Excluir',
+          ),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.red,
+        onPressed: () {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => const MyApp()),
+            (Route<dynamic> route) => false,
+          );
+        },
+        child: const Icon(Icons.exit_to_app, color: Colors.white),
+        tooltip: 'Sair',
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+    );
+  }
+}
+class ResumoPatrimonio extends StatefulWidget {
+  const ResumoPatrimonio({Key? key}) : super(key: key);
+
+  @override
+  _ResumoPatrimonioState createState() => _ResumoPatrimonioState();
+}
+
+class _ResumoPatrimonioState extends State<ResumoPatrimonio> {
+  String descartado = '0';  // Declarado como String
+  String emprestado = '0';  // Declarado como String
+  String usando = '0';      // Declarado como String
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchResumoPatrimonio();
+  }
+
+ Future<void> _fetchResumoPatrimonio() async {
+  const String url = "http://localhost/server/processa_bdCeet.php";
+  final Map<String, dynamic> data = {'acao': 'buscaResumoPatrimonio'};
+
+  try {
+    final response = await http.post(
+      Uri.parse(url),
+      headers: {"Content-Type": "application/json"},
+      body: json.encode(data),
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> responseData = json.decode(response.body);
+
+      if (responseData['status'] == 'success') {
+        setState(() {
+          // Converta para String se necessário, mas verifique o tipo antes de usá-lo
+          descartado = responseData['data']['descartado'].toString(); // Garantir que é String
+          emprestado = responseData['data']['Emprestado'].toString(); // Garantir que é String
+          usando = responseData['data']['Usando'].toString(); // Garantir que é String
+          isLoading = false;
+        });
+      } else {
+        throw Exception(responseData['message']);
+      }
+    } else {
+      throw Exception('Erro ao comunicar com o servidor.');
+    }
+  } catch (e) {
+    print('Erro: $e');
+    setState(() {
+      isLoading = false;
+    });
+  }
+}
+
+
+  @override
+  Widget build(BuildContext context) {
+    if (isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Text(
+            'Resumo de Patrimônio',
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 20),
+          _buildResumoCard(
+            context,
+            'Patrimônio Descartado',
+            descartado,
+            Colors.black,
+            Icons.delete_forever,
+          ),
+          const SizedBox(height: 20),
+          _buildResumoCard(
+            context,
+            'Patrimônio Emprestado',
+            emprestado,
+            Colors.orange,
+            Icons.group,
+          ),
+          const SizedBox(height: 20),
+          _buildResumoCard(
+            context,
+            'Patrimônio em Uso',
+            usando,
+            Colors.green,
+            Icons.check_circle,
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildMenuButton(BuildContext context, String text, Widget page) {
-    return ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        foregroundColor: Colors.white,
-        backgroundColor:
-            const Color.fromARGB(255, 0, 0, 0), // Botões principais em verde escuro
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
+  Widget _buildResumoCard(
+    BuildContext context,
+    String title,
+    String value,  // Modificado para aceitar String
+    Color color,
+    IconData icon,
+  ) {
+    return Card(
+      color: color.withOpacity(0.1),
+      child: ListTile(
+        leading: Icon(icon, color: color, size: 40),
+        title: Text(
+          title,
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+            color: color,
+          ),
         ),
-        padding: const EdgeInsets.symmetric(vertical: 15),
-        minimumSize: const Size(
-            double.infinity, 50), // Responsivo para ocupar toda a largura
+        trailing: Text(
+          value,  // Exibindo como string
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+            color: color,
+          ),
+        ),
       ),
-      onPressed: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => page),
-        );
-      },
-      child: Text(text),
     );
   }
 }

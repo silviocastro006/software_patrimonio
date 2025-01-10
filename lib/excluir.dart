@@ -35,9 +35,10 @@ class _ExcluirState extends State<Excluir> {
         if (responseBody['status'] == 'success') {
           setState(() {
             // Filtra os produtos, excluindo os que têm status 'descartado'
-            _produtos = List<Map<String, dynamic>>.from(responseBody['produtos'])
-                .where((produto) => produto['status'] != 'descartado')
-                .toList();
+            _produtos =
+                List<Map<String, dynamic>>.from(responseBody['produtos'])
+                    .where((produto) => produto['status'] != 'descartado')
+                    .toList();
           });
         } else {
           _showErrorDialog('Erro ao listar produtos');
@@ -123,8 +124,12 @@ class _ExcluirState extends State<Excluir> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Excluir Produto'),
-        backgroundColor: const Color(0xFF1C3A5C), // Cor do AppBar semelhante ao main.dart
+        title: const Text(
+          'Excluir Produto',
+          style: TextStyle(
+              color: Colors.white), // Define a cor do texto como branco
+        ),
+        backgroundColor: const Color(0xFF1C3A5C), // Cor do AppBar
       ),
       body: Container(
         decoration: const BoxDecoration(

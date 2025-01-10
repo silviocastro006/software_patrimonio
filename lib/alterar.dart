@@ -18,7 +18,7 @@ class _AlterarState extends State<Alterar> {
   final TextEditingController _codigoController = TextEditingController();
   final TextEditingController _dataController = TextEditingController();
   final TextEditingController _descricaoController = TextEditingController();
-  
+
   late String _id;
 
   File? _imagemSelecionada;
@@ -53,17 +53,22 @@ class _AlterarState extends State<Alterar> {
   }
 
   Future<void> _atualizarPatrimonio(BuildContext context) async {
-    if (_marcaSelecionada == null || _modeloSelecionado == null || 
-        _corController.text.isEmpty || _codigoController.text.isEmpty || 
-        _dataController.text.isEmpty || _statusSelecionado == null || 
-        _setorSelecionado == null || _descricaoController.text.isEmpty) {
+    if (_marcaSelecionada == null ||
+        _modeloSelecionado == null ||
+        _corController.text.isEmpty ||
+        _codigoController.text.isEmpty ||
+        _dataController.text.isEmpty ||
+        _statusSelecionado == null ||
+        _setorSelecionado == null ||
+        _descricaoController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Por favor, preencha todos os campos obrigatórios.')),
+        const SnackBar(
+            content: Text('Por favor, preencha todos os campos obrigatórios.')),
       );
       return;
     }
 
-    const String url = "http://localhost/server/processa_bdCeet.php"; 
+    const String url = "http://localhost/server/processa_bdCeet.php";
     final Map<String, dynamic> data = {
       'acao': 'altera',
       'id': _id,
@@ -75,7 +80,6 @@ class _AlterarState extends State<Alterar> {
       'setor': _setorSelecionado,
       'status': _statusSelecionado,
       'descricao': _descricaoController.text,
-      // Aqui você pode incluir a lógica para enviar a imagem, se necessário
     };
 
     try {
@@ -93,7 +97,8 @@ class _AlterarState extends State<Alterar> {
         Navigator.pop(context); // Retorna à tela anterior após a atualização
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Falha ao atualizar: ${responseBody['message']}')),
+          SnackBar(
+              content: Text('Falha ao atualizar: ${responseBody['message']}')),
         );
       }
     } catch (error) {
@@ -104,10 +109,6 @@ class _AlterarState extends State<Alterar> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Alterar Dados'),
-        backgroundColor: Colors.blue,
-      ),
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -116,74 +117,125 @@ class _AlterarState extends State<Alterar> {
             end: Alignment.bottomRight,
           ),
         ),
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(16.0),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 400),
-              child: Column(
-                children: [
-                  _buildDropdown('Marca', _marcaSelecionada, marcas, (newValue) {
-                    setState(() => _marcaSelecionada = newValue);
-                  }),
-                  const SizedBox(height: 16),
-                  _buildDropdown('Modelo', _modeloSelecionado, modelos, (newValue) {
-                    setState(() => _modeloSelecionado = newValue);
-                  }),
-                  const SizedBox(height: 16),
-                  _buildTextField('Cor', _corController),
-                  const SizedBox(height: 16),
-                  _buildTextField('Código', _codigoController),
-                  const SizedBox(height: 16),
-                  _buildTextField('Descrição', _descricaoController),
-                  const SizedBox(height: 16),
-                  _buildDropdown('Setor', _setorSelecionado, setores, (newValue) {
-                    setState(() => _setorSelecionado = newValue);
-                  }),
-                  const SizedBox(height: 16),
-                  _buildDropdown('Status', _statusSelecionado, statusList, (newValue) {
-                    setState(() => _statusSelecionado = newValue);
-                  }),
-                  const SizedBox(height: 16),
-                  TextFormField(
-                    controller: _dataController,
-                    decoration: InputDecoration(
-                      labelText: 'Data',
-                      labelStyle: const TextStyle(color: Colors.white),
-                      fillColor: Colors.white.withOpacity(0.1),
-                      filled: true,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(color: Colors.white),
-                      ),
-                    ),
-                    readOnly: true,
-                    onTap: () => _selecionarData(context),
+        child: Column(
+          children: [
+            // Cabeçalho personalizado
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Color(0xFF1C3A5C),
+                    Color(0xFF004d40),
+                    Color(0xFF311B92)
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+              ),
+              child: Center(
+                child: Text(
+                  'Alterar Dados',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
                   ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () => _atualizarPatrimonio(context),
-                    child: const Text('Atualizar'),
-                  ),
-                ],
+                ),
               ),
             ),
-          ),
+            // Corpo do formulário
+            Expanded(
+              child: Center(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(16.0),
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 400),
+                    child: Column(
+                      children: [
+                        _buildDropdown('Marca', _marcaSelecionada, marcas,
+                            (newValue) {
+                          setState(() => _marcaSelecionada = newValue);
+                        }),
+                        const SizedBox(height: 16),
+                        _buildDropdown('Modelo', _modeloSelecionado, modelos,
+                            (newValue) {
+                          setState(() => _modeloSelecionado = newValue);
+                        }),
+                        const SizedBox(height: 16),
+                        _buildTextField('Cor', _corController),
+                        const SizedBox(height: 16),
+                        _buildTextField('Código', _codigoController),
+                        const SizedBox(height: 16),
+                        _buildTextField('Descrição', _descricaoController),
+                        const SizedBox(height: 16),
+                        _buildDropdown('Setor', _setorSelecionado, setores,
+                            (newValue) {
+                          setState(() => _setorSelecionado = newValue);
+                        }),
+                        const SizedBox(height: 16),
+                        _buildDropdown('Status', _statusSelecionado, statusList,
+                            (newValue) {
+                          setState(() => _statusSelecionado = newValue);
+                        }),
+                        const SizedBox(height: 16),
+                        TextFormField(
+                          controller: _dataController,
+                          style: const TextStyle(color: Colors.white),
+                          decoration: InputDecoration(
+                            labelText: 'Data',
+                            labelStyle: const TextStyle(color: Colors.white),
+                            fillColor: Colors.white.withOpacity(0.1),
+                            filled: true,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: const BorderSide(color: Colors.white),
+                            ),
+                          ),
+                          readOnly: true,
+                          onTap: () => _selecionarData(context),
+                        ),
+                        const SizedBox(height: 16),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            foregroundColor: Colors.white, // Cor do texto
+                            backgroundColor: const Color.fromARGB(255, 11, 128, 102), // Verde claro para o botão
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(
+                                  10), // Borda arredondada
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 15), // Espaçamento interno
+                            minimumSize: const Size(double.infinity,
+                                50), // Largura total e altura mínima
+                          ),
+                          onPressed: () => _atualizarPatrimonio(context),
+                          child: const Text('Atualizar'),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildDropdown(String label, String? selectedValue, List<String> options, ValueChanged<String?> onChanged) {
+  Widget _buildDropdown(String label, String? selectedValue,
+      List<String> options, ValueChanged<String?> onChanged) {
     return DropdownButtonFormField<String>(
       value: selectedValue,
       items: options.map((String option) {
         return DropdownMenuItem(
           value: option,
-          child: Text(option, style: const TextStyle(color: Colors.black)),
+          child: Text(option, style: const TextStyle(color: Colors.white)),
         );
       }).toList(),
       onChanged: onChanged,
+      dropdownColor: Colors.black,
       decoration: InputDecoration(
         labelText: label,
         labelStyle: const TextStyle(color: Colors.white),
@@ -200,6 +252,8 @@ class _AlterarState extends State<Alterar> {
   Widget _buildTextField(String label, TextEditingController controller) {
     return TextFormField(
       controller: controller,
+      style: const TextStyle(
+          color: Colors.white), // Define o texto digitado como branco
       decoration: InputDecoration(
         labelText: label,
         labelStyle: const TextStyle(color: Colors.white),

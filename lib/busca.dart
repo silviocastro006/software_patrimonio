@@ -86,25 +86,40 @@ class _BuscaState extends State<Busca> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Consultar Patrimônios'),
-        backgroundColor: Colors.blue,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () {
-              // Navegação condicional para 'menuAdm' ou 'menu'
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const MenuAdm(),
-                ),
-                (Route<dynamic> route) => false,
-              );
-            },
-          ),
-        ],
+     appBar: AppBar(
+  title: const Text(
+    'Consultar Patrimônios',
+    style: TextStyle(color: Colors.white), // Define a cor do texto como branca
+  ),
+  flexibleSpace: Container(
+    decoration: const BoxDecoration(
+      gradient: LinearGradient(
+        colors: [Color(0xFF1C3A5C), Color(0xFF004d40), Color(0xFF311B92)],
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
       ),
+    ),
+  ),
+  actions: [
+    IconButton(
+      icon: const Icon(Icons.arrow_back, color: Colors.white), // Ícone branco
+      onPressed: () {
+        // Navegação condicional para 'menuAdm' ou 'menu'
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const MenuAdm(),
+          ),
+          (Route<dynamic> route) => false,
+        );
+      },
+    ),
+  ],
+),
+
+
+
+      
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -119,23 +134,24 @@ class _BuscaState extends State<Busca> {
             children: [
               TextField(
                 controller: _filterController,
+                style: const TextStyle(color: Colors.white), // Letras em branco
                 decoration: InputDecoration(
                   labelText: 'Filtrar por marca, modelo, data ou status',
-                  labelStyle: const TextStyle(color: Colors.black),
+                  labelStyle: const TextStyle(
+                      color: Colors.white), // Texto do rótulo em branco
                   fillColor: Colors.white.withOpacity(0.1),
                   filled: true,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
-                    borderSide:
-                        const BorderSide(color: Color.fromARGB(255, 0, 0, 0)),
+                    borderSide: const BorderSide(color: Colors.black),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
-                    borderSide:
-                        const BorderSide(color: Color.fromARGB(255, 0, 0, 0)),
+                    borderSide: const BorderSide(color: Colors.black),
                   ),
                   suffixIcon: IconButton(
-                    icon: const Icon(Icons.search, color: Colors.black),
+                    icon: const Icon(Icons.search,
+                        color: Colors.white), // Ícone em branco
                     onPressed: () => _filterPatrimonios(_filterController.text),
                   ),
                 ),
