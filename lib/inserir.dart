@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
@@ -180,7 +181,7 @@ class _InserirState extends State<Inserir> {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Inserção realizada com sucesso!'),
-              backgroundColor: Colors.green,
+              backgroundColor: const Color(0xFF1C3A5C),
             ),
           );
           setState(() {
@@ -221,24 +222,27 @@ class _InserirState extends State<Inserir> {
     }
   }
 
-  Future<void> _escolherFoto() async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+Uint8List? _fotoBytes; // Adiciona esta variável para armazenar os bytes da imagem
 
-    if (pickedFile != null) {
-      final bytes = await pickedFile.readAsBytes();
-      setState(() {
-        _fotoBase64 = base64Encode(bytes); // Atribuindo a imagem base64
-      });
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Por favor, adicione uma foto!'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
+Future<void> _escolherFoto() async {
+  final picker = ImagePicker();
+  final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+  if (pickedFile != null) {
+    final bytes = await pickedFile.readAsBytes();
+    setState(() {
+      _fotoBytes = bytes; // Armazena os bytes da imagem
+      _fotoBase64 = base64Encode(bytes); // Converte para Base64
+    });
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Nenhuma imagem foi selecionada!'),
+        backgroundColor: Colors.red,
+      ),
+    );
   }
+}
 
   Future<void> _selecionarData(BuildContext context) async {
     final DateTime? pickedDate = await showDatePicker(
@@ -290,10 +294,11 @@ class _InserirState extends State<Inserir> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 4, 139, 110),
+      backgroundColor: const Color.fromARGB(137, 0, 89, 255),
       appBar: AppBar(
         title: const Text('Adicionar Patrimônio'),
-        backgroundColor: const Color.fromARGB(255, 4, 139, 110),
+        backgroundColor: const Color(0xFF1C3A5C),
+        
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -337,27 +342,36 @@ class _InserirState extends State<Inserir> {
             ),
             const SizedBox(height: 10),
             _buildTextField(_corController, 'Cor',
-                backgroundColor: Colors.green[800]),
+                backgroundColor: const Color.fromARGB(137, 0, 89, 255)),
             const SizedBox(height: 10),
             _buildTextField(_codigoController, 'Código',
-                backgroundColor: Colors.green[800]),
+                backgroundColor: const Color.fromARGB(137, 0, 89, 255)),
             const SizedBox(height: 10),
             _buildDateField(context),
             const SizedBox(height: 10),
             _buildTextField(_descricaoController, 'Descrição',
-                backgroundColor: Colors.green[80]),
+                backgroundColor: const Color.fromARGB(137, 0, 89, 255)),
             const SizedBox(height: 10),
             _buildFotoPicker(),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () => _enviarDados(context),
-              child: const Text('Adicionar Patrimônio'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromARGB(255, 4, 65, 51),
-                foregroundColor:
-                    Colors.white, // Define a cor do texto como branca
-              ),
-            ),
+           const SizedBox(height: 20),
+Center(
+  child: SizedBox(
+    width: 200, // Largura fixa
+    child: ElevatedButton(
+      onPressed: () => _enviarDados(context),
+      child: const Text('Adicionar Patrimônio'),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: const Color.fromARGB(255, 6, 0, 61),
+        foregroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8), // Borda arredondada
+        ),
+      ),
+    ),
+  ),
+),
+    const SizedBox(height: 35),
+
           ],
         ),
       ),
@@ -436,9 +450,9 @@ class _InserirState extends State<Inserir> {
       decoration: InputDecoration(
         labelText: label,
         labelStyle: const TextStyle(color: Colors.white),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0)),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(15.0)),
         filled: true,
-        fillColor: Colors.green[800],
+        fillColor: const Color.fromARGB(0, 0, 89, 255),
       ),
     );
   }
@@ -454,9 +468,9 @@ class _InserirState extends State<Inserir> {
               labelText: 'Data',
               labelStyle: const TextStyle(color: Colors.white),
               border:
-                  OutlineInputBorder(borderRadius: BorderRadius.circular(8.0)),
+                  OutlineInputBorder(borderRadius: BorderRadius.circular(15.0)),
               filled: true,
-              fillColor: Colors.green[800],
+              fillColor: const Color.fromARGB(0, 0, 89, 255),
             ),
             onTap: () => _selecionarData(context),
           ),
@@ -465,23 +479,68 @@ class _InserirState extends State<Inserir> {
     );
   }
 
-  Widget _buildFotoPicker() {
-    return GestureDetector(
-      onTap: _escolherFoto,
-      child: Container(
-        width: 100,
-        height: 100,
-        decoration: BoxDecoration(
-          color: Colors.green[700],
-          borderRadius: BorderRadius.circular(8.0),
-        ),
-        child: _fotoBase64 == null
-            ? const Icon(Icons.add_a_photo, color: Colors.white)
-            : Image.memory(
-                base64Decode(_fotoBase64!),
-                fit: BoxFit.cover,
+Widget _buildFotoPicker() {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: [
+      const Text(
+        'Foto',
+        style: TextStyle(color: Colors.white),
+      ),
+      const SizedBox(height: 10),
+      Center(
+        child: _fotoBytes != null
+            ? Column(
+                children: [
+                  Container(
+                    height: 200, // Altura fixa
+                    width: 200, // Largura fixa
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.white),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: Image.memory(
+                        _fotoBytes!,
+                        fit: BoxFit.cover, // Ajusta a imagem para cobrir o espaço disponível
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  ElevatedButton(
+                    onPressed: _escolherFoto,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor:const Color.fromARGB(255, 6, 0, 61), // Cor de fundo do botão
+                      foregroundColor: Colors.white, // Cor do texto
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10), // Borda arredondada
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 10), // Espaçamento interno
+                    ),
+                    child: const Text('Alterar Foto'),
+                  ),
+                ],
+              )
+            : ElevatedButton(
+                onPressed: _escolherFoto,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color.fromARGB(255, 6, 0, 61), // Cor de fundo do botão
+                  foregroundColor: Colors.white, // Cor do texto
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10), // Borda arredondada
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 20, vertical: 10), // Espaçamento interno
+                ),
+                child: const Text('Adicionar Foto'),
               ),
       ),
-    );
-  }
+    ],
+  );
+}
+
+
+
 }

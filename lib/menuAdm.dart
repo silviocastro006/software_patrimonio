@@ -1,13 +1,13 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'main.dart'; // Import da tela de login
 import 'busca.dart';
 import 'inserir.dart';
 import 'excluir.dart';
 import 'inserirFuncionario.dart';
 import 'package:http/http.dart' as http;
-
 
 class MenuAdm extends StatelessWidget {
   const MenuAdm({Key? key}) : super(key: key);
@@ -20,8 +20,8 @@ class MenuAdm extends StatelessWidget {
         primarySwatch: Colors.blue,
         bottomNavigationBarTheme: const BottomNavigationBarThemeData(
           selectedItemColor: Colors.blue,
-          unselectedItemColor: Colors.grey,
-          backgroundColor: Colors.white,
+          unselectedItemColor: Colors.orange,
+          backgroundColor: Colors.grey,
         ),
       ),
       home: const TelaPrincipalAdm(),
@@ -52,10 +52,13 @@ class _TelaPrincipalAdmState extends State<TelaPrincipalAdm> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Menu Administrador'),
-        backgroundColor: Colors.blue,
-        foregroundColor: Colors.white,
+        backgroundColor: const Color.fromARGB(179, 233, 224, 224), // Cor de fundo cinza
+        foregroundColor: Colors.black,
       ),
-      body: _pages[_currentIndex],
+      body: Container(
+        color: const Color.fromARGB(179, 233, 224, 224), // Cor de fundo cinza
+        child: _pages[_currentIndex],
+      ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (index) {
@@ -86,22 +89,26 @@ class _TelaPrincipalAdmState extends State<TelaPrincipalAdm> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.red,
-        onPressed: () {
-          Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(builder: (context) => const MyApp()),
-            (Route<dynamic> route) => false,
-          );
-        },
-        child: const Icon(Icons.exit_to_app, color: Colors.white),
-        tooltip: 'Sair',
+      floatingActionButton: Container(
+        margin: const EdgeInsets.only(bottom: 45), // Move o botão 10px para cima
+        child: FloatingActionButton(
+          backgroundColor: Colors.red,
+          onPressed: () {
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => const MyApp()),
+              (Route<dynamic> route) => false,
+            );
+          },
+          child: const Icon(Icons.exit_to_app, color: Colors.white),
+          tooltip: 'Sair',
+        ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 }
+
 class ResumoPatrimonio extends StatefulWidget {
   const ResumoPatrimonio({Key? key}) : super(key: key);
 
@@ -157,79 +164,90 @@ class _ResumoPatrimonioState extends State<ResumoPatrimonio> {
   }
 }
 
+@override
+Widget build(BuildContext context) {
+  if (isLoading) {
+    return const Center(child: CircularProgressIndicator());
+  }
 
-  @override
-  Widget build(BuildContext context) {
-    if (isLoading) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Text(
-            'Resumo de Patrimônio',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 20),
-          _buildResumoCard(
-            context,
-            'Patrimônio Descartado',
-            descartado,
-            Colors.black,
-            Icons.delete_forever,
-          ),
-          const SizedBox(height: 20),
-          _buildResumoCard(
-            context,
-            'Patrimônio Emprestado',
-            emprestado,
-            Colors.orange,
-            Icons.group,
-          ),
-          const SizedBox(height: 20),
-          _buildResumoCard(
+  return Padding(
+    padding: const EdgeInsets.all(16.0),
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const Text(
+          'Resumo de Patrimônio',
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 20),
+        Container(
+       
+          child: _buildResumoCard(
             context,
             'Patrimônio em Uso',
             usando,
             Colors.green,
             Icons.check_circle,
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildResumoCard(
-    BuildContext context,
-    String title,
-    String value,  // Modificado para aceitar String
-    Color color,
-    IconData icon,
-  ) {
-    return Card(
-      color: color.withOpacity(0.1),
-      child: ListTile(
-        leading: Icon(icon, color: color, size: 40),
-        title: Text(
-          title,
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 18,
-            color: color,
+        ),
+        const SizedBox(height: 20),
+        Container(
+         
+          child: _buildResumoCard(
+            context,
+            'Patrimônio Emprestado',
+            emprestado,
+            Colors.orange,
+            Icons.group,
           ),
         ),
-        trailing: Text(
-          value,  // Exibindo como string
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 18,
-            color: color,
+        const SizedBox(height: 20),
+        Container(
+          
+          child: _buildResumoCard(
+            context,
+            'Patrimônio Descartado',
+            descartado,
+            Colors.black,
+            Icons.delete_forever,
           ),
         ),
+      ],
+    ),
+  );
+}
+Widget _buildResumoCard(
+  BuildContext context,
+  String title,
+  String value,  // Modificado para aceitar String
+  Color color,
+  IconData icon,
+) {
+  return Card(
+    color: Colors.white, // Define o fundo do card como branco
+    elevation: 4, // Adiciona uma leve sombra para destacar o card
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(8.0), // Cantos arredondados para o card
+    ),
+    child: ListTile(
+      leading: Icon(icon, color: color, size: 40),
+      title: Text(
+        title,
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 22,
+          color: color, // Cor do texto correspondente ao parâmetro `color`
+        ),
       ),
-    );
-  }
+      trailing: Text(
+        value, // Exibindo como string
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 22,
+          color: color, // Cor do texto correspondente ao parâmetro `color`
+        ),
+      ),
+    ),
+  );
+}
 }

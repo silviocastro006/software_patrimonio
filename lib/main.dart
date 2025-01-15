@@ -77,84 +77,79 @@ class MeuAplicativo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFF1C3A5C), Color(0xFF004d40), Color(0xFF311B92)], // Tons mais escuros
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
+body: Container(
+  color: const Color.fromARGB(137, 0, 89, 255), // Cor sólida definida aqui
+  child: Center(
+    child: SingleChildScrollView(
+      padding: const EdgeInsets.all(16.0),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(
+          maxWidth: 400, // Responsivo em telas maiores
         ),
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(16.0),
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                maxWidth: 400, // Responsivo em telas maiores
-              ),
-              child: Column(
-                children: <Widget>[
-                  const Text(
-                    'Bem-vindo',
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(height: 40),
-                  TextFormField(
-                    controller: _login,
-                    style: const TextStyle(color: Colors.white), // Cor do texto inserido
-                    decoration: InputDecoration(
-                      labelText: 'Login',
-                      labelStyle: const TextStyle(color: Colors.white),
-                      fillColor: Colors.white.withOpacity(0.1),
-                      filled: true,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(color: Colors.white),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  TextFormField(
-                    controller: _senha,
-                    style: const TextStyle(color: Colors.white), // Cor do texto inserido
-                    decoration: InputDecoration(
-                      labelText: 'Senha',
-                      labelStyle: const TextStyle(color: Colors.white),
-                      fillColor: Colors.white.withOpacity(0.1),
-                      filled: true,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(color: Colors.white),
-                      ),
-                    ),
-                    obscureText: true,
-                  ),
-                  const SizedBox(height: 30),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.white,
-                      backgroundColor: const Color(0xFF50E3C2), // Verde claro para o botão
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      padding: const EdgeInsets.symmetric(vertical: 15),
-                      minimumSize: const Size(double.infinity, 50),
-                    ),
-                    onPressed: () {
-                      _enviarDados(context);
-                    },
-                    child: const Text('Entrar'),
-                  ),
-                ],
+        child: Column(
+          children: <Widget>[
+            const Text(
+              'Bem-vindo',
+              style: TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
               ),
             ),
-          ),
+            const SizedBox(height: 40),
+            TextFormField(
+              controller: _login,
+              style: const TextStyle(color: Colors.white), // Cor do texto inserido
+              decoration: InputDecoration(
+                labelText: 'Login',
+                labelStyle: const TextStyle(color: Colors.white),
+                fillColor: Colors.white.withOpacity(0.1),
+                filled: true,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: const BorderSide(color: Colors.white),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            TextFormField(
+              controller: _senha,
+              style: const TextStyle(color: Colors.white), // Cor do texto inserido
+              decoration: InputDecoration(
+                labelText: 'Senha',
+                labelStyle: const TextStyle(color: Colors.white),
+                fillColor: Colors.white.withOpacity(0.1),
+                filled: true,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: const BorderSide(color: Colors.white),
+                ),
+              ),
+              obscureText: true,
+            ),
+            const SizedBox(height: 30),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.white,
+                backgroundColor: const Color.fromARGB(255, 6, 0, 61), // Verde claro para o botão
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                padding: const EdgeInsets.symmetric(vertical: 15),
+                minimumSize: const Size(double.infinity, 50),
+              ),
+              onPressed: () {
+                _enviarDados(context);
+              },
+              child: const Text('Entrar'),
+            ),
+          ],
         ),
       ),
+    ),
+  ),
+),
+
     );
   }
 }
