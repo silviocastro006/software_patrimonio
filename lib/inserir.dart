@@ -23,66 +23,17 @@ class _InserirState extends State<Inserir> {
   final List<String> setores = ['ADM', 'Radio e TV', 'TI', 'Modelagem'];
   final List<String> statusList = ['Usando', 'Emprestado', 'Descartado'];
 
-  String? _marcaSelecionada; // Alteração aqui: agora é uma String
+  String? _marcaSelecionada;
   String? _modeloSelecionado;
   String? _setorSelecionado;
   String? _statusSelecionado;
+
+  Uint8List? _fotoBytes;
 
   @override
   void initState() {
     super.initState();
     _carregarMarcas();
-  }
-
-  Future<void> fetchBrands() async {
-    try {
-      final response = await http
-          .get(Uri.parse('http://localhost/server/processa_bdCeet.php'));
-
-      // Imprimir a resposta para diagnóstico
-      print('Resposta: ${response.body}');
-
-      if (response.statusCode == 200) {
-        // Parse JSON apenas se a resposta for válida
-        final data = jsonDecode(response.body);
-        // Lógica para processar os dados
-      } else {
-        print('Erro ao carregar dados: ${response.statusCode}');
-      }
-    } catch (e) {
-      print('Erro ao fazer a requisição: $e');
-    }
-  }
-
-  Future<void> listarMarcas() async {
-    const String url = "http://localhost/server/processa_bdCeet.php";
-    final Map<String, dynamic> data = {
-      'acao': 'listarMarcas',
-    };
-
-    try {
-      // Enviando a requisição POST
-      final response = await http.post(
-        Uri.parse(url),
-        body: data,
-      );
-
-      if (response.statusCode == 200) {
-        // Se a requisição for bem-sucedida
-        Map<String, dynamic> jsonResponse = json.decode(response.body);
-        if (jsonResponse['status'] == 'sucesso') {
-          List marcas = jsonResponse['dados'];
-          // Preencher o campo marcas com os dados
-          print(marcas); // Exemplo de como usar a lista de marcas
-        } else {
-          print("Erro: ${jsonResponse['mensagem']}");
-        }
-      } else {
-        print("Erro na requisição: ${response.statusCode}");
-      }
-    } catch (e) {
-      print("Erro na requisição ou ao decodificar o JSON: $e");
-    }
   }
 
   Future<void> _carregarMarcas() async {
@@ -129,7 +80,7 @@ class _InserirState extends State<Inserir> {
         headers: {'Content-Type': 'application/json'},
       );
       if (response.statusCode == 200) {
-        _carregarMarcas(); // Atualizar a lista de marcas após adicionar
+        _carregarMarcas();
       } else {
         print("Erro ao adicionar marca: ${response.body}");
       }
@@ -158,7 +109,7 @@ class _InserirState extends State<Inserir> {
 
     final Map<String, dynamic> body = {
       'acao': 'inserir',
-      'marca_status': _marcaSelecionada, // Agora é uma string
+      'marca_status': _marcaSelecionada,
       'modelo': _modeloSelecionado,
       'cor': _corController.text,
       'codigo': _codigoController.text,
@@ -181,7 +132,7 @@ class _InserirState extends State<Inserir> {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Inserção realizada com sucesso!'),
-              backgroundColor: const Color(0xFF1C3A5C),
+              backgroundColor: Colors.green,
             ),
           );
           setState(() {
@@ -222,27 +173,25 @@ class _InserirState extends State<Inserir> {
     }
   }
 
-Uint8List? _fotoBytes; // Adiciona esta variável para armazenar os bytes da imagem
+  Future<void> _escolherFoto() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
-Future<void> _escolherFoto() async {
-  final picker = ImagePicker();
-  final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-
-  if (pickedFile != null) {
-    final bytes = await pickedFile.readAsBytes();
-    setState(() {
-      _fotoBytes = bytes; // Armazena os bytes da imagem
-      _fotoBase64 = base64Encode(bytes); // Converte para Base64
-    });
-  } else {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Nenhuma imagem foi selecionada!'),
-        backgroundColor: Colors.red,
-      ),
-    );
+    if (pickedFile != null) {
+      final bytes = await pickedFile.readAsBytes();
+      setState(() {
+        _fotoBytes = bytes;
+        _fotoBase64 = base64Encode(bytes);
+      });
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Nenhuma imagem foi selecionada!'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
-}
 
   Future<void> _selecionarData(BuildContext context) async {
     final DateTime? pickedDate = await showDatePicker(
@@ -294,85 +243,94 @@ Future<void> _escolherFoto() async {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(137, 0, 89, 255),
       appBar: AppBar(
         title: const Text('Adicionar Patrimônio'),
-        backgroundColor: const Color(0xFF1C3A5C),
-        
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
+        elevation: 4,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: ListView(
-          children: [
-            _buildDropdownComAdicao(
-              'Marca',
-              _marcaSelecionada, // Alteração aqui: agora é uma String
-              marcas,
-              (newValue) => setState(() {
-                _marcaSelecionada = newValue;
-              }),
-              () => _mostrarDialogAdicionarMarca(context),
-            ),
-            const SizedBox(height: 10),
-            _buildDropdown(
-              'Modelo',
-              _modeloSelecionado,
-              modelos,
-              (newValue) => setState(() {
-                _modeloSelecionado = newValue;
-              }),
-            ),
-            const SizedBox(height: 10),
-            _buildDropdown(
-              'Setor',
-              _setorSelecionado as String?,
-              setores,
-              (newValue) => setState(() {
-                _setorSelecionado = newValue as String?;
-              }),
-            ),
-            const SizedBox(height: 10),
-            _buildDropdown(
-              'Status',
-              _statusSelecionado as String?,
-              statusList,
-              (newValue) => setState(() {
-                _statusSelecionado = newValue as String?;
-              }),
-            ),
-            const SizedBox(height: 10),
-            _buildTextField(_corController, 'Cor',
-                backgroundColor: const Color.fromARGB(137, 0, 89, 255)),
-            const SizedBox(height: 10),
-            _buildTextField(_codigoController, 'Código',
-                backgroundColor: const Color.fromARGB(137, 0, 89, 255)),
-            const SizedBox(height: 10),
-            _buildDateField(context),
-            const SizedBox(height: 10),
-            _buildTextField(_descricaoController, 'Descrição',
-                backgroundColor: const Color.fromARGB(137, 0, 89, 255)),
-            const SizedBox(height: 10),
-            _buildFotoPicker(),
-           const SizedBox(height: 20),
-Center(
-  child: SizedBox(
-    width: 200, // Largura fixa
-    child: ElevatedButton(
-      onPressed: () => _enviarDados(context),
-      child: const Text('Adicionar Patrimônio'),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: const Color.fromARGB(255, 6, 0, 61),
-        foregroundColor: Colors.white,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8), // Borda arredondada
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Color(0xFF2196F3), // Azul claro
+              Color(0xFF0D47A1), // Azul mais escuro
+            ],
+          ),
         ),
-      ),
-    ),
-  ),
-),
-    const SizedBox(height: 35),
-
-          ],
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: ListView(
+            children: [
+              _buildDropdownComAdicao(
+                'Marca',
+                _marcaSelecionada,
+                marcas,
+                (newValue) => setState(() {
+                  _marcaSelecionada = newValue;
+                }),
+                () => _mostrarDialogAdicionarMarca(context),
+              ),
+              const SizedBox(height: 20),
+              _buildDropdown(
+                'Modelo',
+                _modeloSelecionado,
+                modelos,
+                (newValue) => setState(() {
+                  _modeloSelecionado = newValue;
+                }),
+              ),
+              const SizedBox(height: 20),
+              _buildDropdown(
+                'Setor',
+                _setorSelecionado,
+                setores,
+                (newValue) => setState(() {
+                  _setorSelecionado = newValue;
+                }),
+              ),
+              const SizedBox(height: 20),
+              _buildDropdown(
+                'Status',
+                _statusSelecionado,
+                statusList,
+                (newValue) => setState(() {
+                  _statusSelecionado = newValue;
+                }),
+              ),
+              const SizedBox(height: 20),
+              _buildTextField(_corController, 'Cor'),
+              const SizedBox(height: 20),
+              _buildTextField(_codigoController, 'Código'),
+              const SizedBox(height: 20),
+              _buildDateField(context),
+              const SizedBox(height: 20),
+              _buildTextField(_descricaoController, 'Descrição'),
+              const SizedBox(height: 20),
+              _buildFotoPicker(),
+              const SizedBox(height: 30),
+              Center(
+                child: SizedBox(
+                  width: 200,
+                  child: ElevatedButton(
+                    onPressed: () => _enviarDados(context),
+                    child: const Text('Adicionar Patrimônio'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF4CAF50), // Verde
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 15),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 50),
+            ],
+          ),
         ),
       ),
     );
@@ -388,7 +346,10 @@ Center(
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(color: Colors.white)),
+        Text(
+          label,
+          style: const TextStyle(color: Colors.white, fontSize: 16),
+        ),
         Row(
           children: [
             Expanded(
@@ -396,9 +357,8 @@ Center(
                 isExpanded: true,
                 value: selectedValue,
                 onChanged: (newValue) => onChanged(newValue),
-                dropdownColor: Colors.grey[800], // Cor de fundo do menu
-                style: const TextStyle(
-                    color: Colors.white), // Cor do texto selecionado
+                dropdownColor: Colors.grey[800],
+                style: const TextStyle(color: Colors.white),
                 items: items.map<DropdownMenuItem<String>>(
                     (Map<String, dynamic> value) {
                   return DropdownMenuItem<String>(
@@ -423,14 +383,16 @@ Center(
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(color: Colors.white)),
+        Text(
+          label,
+          style: const TextStyle(color: Colors.white, fontSize: 16),
+        ),
         DropdownButton<String>(
           isExpanded: true,
           value: selectedValue,
           onChanged: (newValue) => onChanged(newValue),
-          dropdownColor: Colors.grey[800], // Cor de fundo do menu
-          style:
-              const TextStyle(color: Colors.white), // Cor do texto selecionado
+          dropdownColor: Colors.grey[800],
+          style: const TextStyle(color: Colors.white),
           items: items.map<DropdownMenuItem<String>>((String value) {
             return DropdownMenuItem<String>(
               value: value,
@@ -442,105 +404,102 @@ Center(
     );
   }
 
-  Widget _buildTextField(TextEditingController controller, String label,
-      {Color? backgroundColor}) {
+  Widget _buildTextField(TextEditingController controller, String label) {
     return TextField(
       controller: controller,
       style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
         labelText: label,
         labelStyle: const TextStyle(color: Colors.white),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(15.0)),
         filled: true,
-        fillColor: const Color.fromARGB(0, 0, 89, 255),
+        fillColor: Colors.white.withOpacity(0.1),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide.none,
+        ),
+        contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
       ),
     );
   }
 
   Widget _buildDateField(BuildContext context) {
-    return Row(
+    return TextField(
+      controller: _dataController,
+      style: const TextStyle(color: Colors.white),
+      decoration: InputDecoration(
+        labelText: 'Data',
+        labelStyle: const TextStyle(color: Colors.white),
+        filled: true,
+        fillColor: Colors.white.withOpacity(0.1),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide.none,
+        ),
+        contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+      ),
+      onTap: () => _selecionarData(context),
+    );
+  }
+
+  Widget _buildFotoPicker() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Expanded(
-          child: TextField(
-            controller: _dataController,
-            style: const TextStyle(color: Colors.white),
-            decoration: InputDecoration(
-              labelText: 'Data',
-              labelStyle: const TextStyle(color: Colors.white),
-              border:
-                  OutlineInputBorder(borderRadius: BorderRadius.circular(15.0)),
-              filled: true,
-              fillColor: const Color.fromARGB(0, 0, 89, 255),
-            ),
-            onTap: () => _selecionarData(context),
-          ),
+        const Text(
+          'Foto',
+          style: TextStyle(color: Colors.white, fontSize: 16),
+        ),
+        const SizedBox(height: 10),
+        Center(
+          child: _fotoBytes != null
+              ? Column(
+                  children: [
+                    Container(
+                      height: 200,
+                      width: 200,
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.white),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: Image.memory(
+                          _fotoBytes!,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    ElevatedButton(
+                      onPressed: _escolherFoto,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF4CAF50),
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 10),
+                      ),
+                      child: const Text('Alterar Foto'),
+                    ),
+                  ],
+                )
+              : ElevatedButton(
+                  onPressed: _escolherFoto,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF4CAF50),
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 10),
+                  ),
+                  child: const Text('Adicionar Foto'),
+                ),
         ),
       ],
     );
   }
-
-Widget _buildFotoPicker() {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.center,
-    children: [
-      const Text(
-        'Foto',
-        style: TextStyle(color: Colors.white),
-      ),
-      const SizedBox(height: 10),
-      Center(
-        child: _fotoBytes != null
-            ? Column(
-                children: [
-                  Container(
-                    height: 200, // Altura fixa
-                    width: 200, // Largura fixa
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.white),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: Image.memory(
-                        _fotoBytes!,
-                        fit: BoxFit.cover, // Ajusta a imagem para cobrir o espaço disponível
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  ElevatedButton(
-                    onPressed: _escolherFoto,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor:const Color.fromARGB(255, 6, 0, 61), // Cor de fundo do botão
-                      foregroundColor: Colors.white, // Cor do texto
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10), // Borda arredondada
-                      ),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 20, vertical: 10), // Espaçamento interno
-                    ),
-                    child: const Text('Alterar Foto'),
-                  ),
-                ],
-              )
-            : ElevatedButton(
-                onPressed: _escolherFoto,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(255, 6, 0, 61), // Cor de fundo do botão
-                  foregroundColor: Colors.white, // Cor do texto
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10), // Borda arredondada
-                  ),
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 20, vertical: 10), // Espaçamento interno
-                ),
-                child: const Text('Adicionar Foto'),
-              ),
-      ),
-    ],
-  );
-}
-
-
-
 }

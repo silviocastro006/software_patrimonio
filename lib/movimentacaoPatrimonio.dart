@@ -5,14 +5,14 @@ import 'menu.dart'; // Import da tela de menu normal
 import 'menuAdm.dart'; // Import da tela de menu admin
 import 'alterar.dart'; // Import da tela de alterar
 
-class Busca extends StatefulWidget {
-  const Busca({Key? key}) : super(key: key);
+class Movimentacaopatrimonio extends StatefulWidget {
+  const Movimentacaopatrimonio({Key? key}) : super(key: key);
 
   @override
   _BuscaState createState() => _BuscaState();
 }
 
-class _BuscaState extends State<Busca> {
+class _BuscaState extends State<Movimentacaopatrimonio> {
   final TextEditingController _filterController = TextEditingController();
   List<Map<String, dynamic>> _patrimonios = [];
   List<Map<String, dynamic>> _filteredPatrimonios = [];
@@ -73,28 +73,6 @@ class _BuscaState extends State<Busca> {
   }
 
   void _goToAlterarPage(Map<String, dynamic> patrimonio) {
-    // Verifica se o patrimônio contém todos os campos necessários
-    if (patrimonio['id'] == null ||
-        patrimonio['marca'] == null ||
-        patrimonio['modelo'] == null ||
-        patrimonio['cor'] == null ||
-        patrimonio['codigo'] == null ||
-        patrimonio['data'] == null ||
-        patrimonio['setor'] == null ||
-        patrimonio['status'] == null ||
-        patrimonio['descricao'] == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Dados do patrimônio incompletos.'),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
-    }
-
-    // Log para depuração
-    print('Dados do patrimônio: $patrimonio');
-
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -105,12 +83,57 @@ class _BuscaState extends State<Busca> {
     );
   }
 
+  void _atualizarStatus(String id, String novoStatus) async {
+    const String url = "http://localhost/server/processa_bdCeet.php";
+    final Map<String, dynamic> data = {
+      'acao': 'atualizarStatus',
+      'id': id,
+      'status': novoStatus,
+    };
+
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode(data),
+      );
+
+      if (response.statusCode == 200) {
+        final responseBody = json.decode(response.body);
+        if (responseBody['status'] == 'success') {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Status atualizado para $novoStatus!'),
+              backgroundColor: Colors.green,
+            ),
+          );
+          _fetchPatrimonios(); // Atualiza a lista após a mudança de status
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Erro ao atualizar: ${responseBody['message']}'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    } catch (error) {
+      print("Erro durante a requisição: $error");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Erro ao atualizar status.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Consultar Patrimônios',
+          'Movimentação de Patrimônio',
           style: TextStyle(color: Colors.white),
         ),
         flexibleSpace: Container(
@@ -217,18 +240,57 @@ class _BuscaState extends State<Busca> {
                                 style: const TextStyle(color: Colors.white)),
                           ],
                         ),
-                        trailing: ElevatedButton(
-                          onPressed: () => _goToAlterarPage(patrimonio),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF4CAF50), // Verde
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            // Botão "Usando" (verde)
+                            ElevatedButton(
+                              onPressed: () => _atualizarStatus(
+                                  patrimonio['id'].toString(), 'usando'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.green,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                              child: const Text(
+                                'Usando',
+                                style: TextStyle(color: Colors.white),
+                              ),
                             ),
-                          ),
-                          child: const Text(
-                            '+ Detalhes',
-                            style: TextStyle(color: Colors.white),
-                          ),
+                            const SizedBox(width: 8),
+                            // Botão "Emprestado" (laranja)
+                            ElevatedButton(
+                              onPressed: () => _atualizarStatus(
+                                  patrimonio['id'].toString(), 'emprestado'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.orange,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                              child: const Text(
+                                'Emprestado',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            // Botão "Descartado" (vermelho)
+                            ElevatedButton(
+                              onPressed: () => _atualizarStatus(
+                                  patrimonio['id'].toString(), 'descartado'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.red,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                              child: const Text(
+                                'Descartado',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     );

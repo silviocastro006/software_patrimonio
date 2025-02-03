@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'main.dart'; // Import da tela de login
@@ -8,6 +7,8 @@ import 'inserir.dart';
 import 'excluir.dart';
 import 'inserirFuncionario.dart';
 import 'package:http/http.dart' as http;
+
+import 'movimentacaoPatrimonio.dart';
 
 class MenuAdm extends StatelessWidget {
   const MenuAdm({Key? key}) : super(key: key);
@@ -19,9 +20,9 @@ class MenuAdm extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
         bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-          selectedItemColor: Colors.blue,
-          unselectedItemColor: Colors.orange,
-          backgroundColor: Colors.grey,
+          selectedItemColor: Colors.blue, // Cor do ícone selecionado
+          unselectedItemColor: Colors.grey, // Cor do ícone não selecionado
+          //backgroundColor: Colors.white, // Fundo da barra de navegação
         ),
       ),
       home: const TelaPrincipalAdm(),
@@ -43,6 +44,7 @@ class _TelaPrincipalAdmState extends State<TelaPrincipalAdm> {
     const ResumoPatrimonio(),
     const Inserir(),
     const Busca(),
+    const Movimentacaopatrimonio(),
     InserirFuncionario(),
     const Excluir(),
   ];
@@ -50,13 +52,23 @@ class _TelaPrincipalAdmState extends State<TelaPrincipalAdm> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Menu Administrador'),
-        backgroundColor: const Color.fromARGB(179, 233, 224, 224), // Cor de fundo cinza
-        foregroundColor: Colors.black,
+      appBar: AppBar(//RETA SUPERIOR 
+        /*title: const Text('Menu Administrador'),
+        backgroundColor: Colors.white, // Fundo branco para a AppBar
+        foregroundColor: Colors.black, // Cor do texto e ícones
+        elevation: 4, // Sombra sutil*/
       ),
       body: Container(
-        color: const Color.fromARGB(179, 233, 224, 224), // Cor de fundo cinza
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Color(0xFF2196F3), // Azul claro
+              Color(0xFF0D47A1), // Azul mais escuro
+            ],
+          ),
+        ),
         child: _pages[_currentIndex],
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -80,6 +92,10 @@ class _TelaPrincipalAdmState extends State<TelaPrincipalAdm> {
             label: 'Consulta',
           ),
           BottomNavigationBarItem(
+            icon: Icon(Icons.search),
+            label: 'Movimentar Patrimonio',
+          ),
+          BottomNavigationBarItem(
             icon: Icon(Icons.person_add),
             label: 'Funcionário',
           ),
@@ -90,9 +106,9 @@ class _TelaPrincipalAdmState extends State<TelaPrincipalAdm> {
         ],
       ),
       floatingActionButton: Container(
-        margin: const EdgeInsets.only(bottom: 45), // Move o botão 10px para cima
+        margin: const EdgeInsets.only(bottom: 45), // Ajuste de posição
         child: FloatingActionButton(
-          backgroundColor: Colors.red,
+          backgroundColor: Colors.red, // Cor de destaque para o botão de saída
           onPressed: () {
             Navigator.pushAndRemoveUntil(
               context,
@@ -117,9 +133,9 @@ class ResumoPatrimonio extends StatefulWidget {
 }
 
 class _ResumoPatrimonioState extends State<ResumoPatrimonio> {
-  String descartado = '0';  // Declarado como String
-  String emprestado = '0';  // Declarado como String
-  String usando = '0';      // Declarado como String
+  String descartado = '0';
+  String emprestado = '0';
+  String usando = '0';
   bool isLoading = true;
 
   @override
@@ -128,126 +144,127 @@ class _ResumoPatrimonioState extends State<ResumoPatrimonio> {
     _fetchResumoPatrimonio();
   }
 
- Future<void> _fetchResumoPatrimonio() async {
-  const String url = "http://localhost/server/processa_bdCeet.php";
-  final Map<String, dynamic> data = {'acao': 'buscaResumoPatrimonio'};
+  Future<void> _fetchResumoPatrimonio() async {
+    const String url = "http://localhost/server/processa_bdCeet.php";
+    final Map<String, dynamic> data = {'acao': 'buscaResumoPatrimonio'};
 
-  try {
-    final response = await http.post(
-      Uri.parse(url),
-      headers: {"Content-Type": "application/json"},
-      body: json.encode(data),
-    );
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {"Content-Type": "application/json"},
+        body: json.encode(data),
+      );
 
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> responseData = json.decode(response.body);
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseData = json.decode(response.body);
 
-      if (responseData['status'] == 'success') {
-        setState(() {
-          // Converta para String se necessário, mas verifique o tipo antes de usá-lo
-          descartado = responseData['data']['descartado'].toString(); // Garantir que é String
-          emprestado = responseData['data']['Emprestado'].toString(); // Garantir que é String
-          usando = responseData['data']['Usando'].toString(); // Garantir que é String
-          isLoading = false;
-        });
+        if (responseData['status'] == 'success') {
+          setState(() {
+            descartado = responseData['data']['descartado'].toString();
+            emprestado = responseData['data']['Emprestado'].toString();
+            usando = responseData['data']['Usando'].toString();
+            isLoading = false;
+          });
+        } else {
+          throw Exception(responseData['message']);
+        }
       } else {
-        throw Exception(responseData['message']);
+        throw Exception('Erro ao comunicar com o servidor.');
       }
-    } else {
-      throw Exception('Erro ao comunicar com o servidor.');
+    } catch (e) {
+      print('Erro: $e');
+      setState(() {
+        isLoading = false;
+      });
     }
-  } catch (e) {
-    print('Erro: $e');
-    setState(() {
-      isLoading = false;
-    });
-  }
-}
-
-@override
-Widget build(BuildContext context) {
-  if (isLoading) {
-    return const Center(child: CircularProgressIndicator());
   }
 
-  return Padding(
-    padding: const EdgeInsets.all(16.0),
-    child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        const Text(
-          'Resumo de Patrimônio',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 20),
-        Container(
-       
-          child: _buildResumoCard(
-            context,
+  @override
+  Widget build(BuildContext context) {
+    if (isLoading) {
+      return const Center(child: CircularProgressIndicator(color: Colors.white));
+    }
+
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Text(
+            'Resumo de Patrimônio',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(height: 20),
+          _buildResumoCard(
             'Patrimônio em Uso',
             usando,
             Colors.green,
             Icons.check_circle,
           ),
-        ),
-        const SizedBox(height: 20),
-        Container(
-         
-          child: _buildResumoCard(
-            context,
+          const SizedBox(height: 20),
+          _buildResumoCard(
             'Patrimônio Emprestado',
             emprestado,
             Colors.orange,
             Icons.group,
           ),
-        ),
-        const SizedBox(height: 20),
-        Container(
-          
-          child: _buildResumoCard(
-            context,
+          const SizedBox(height: 20),
+          _buildResumoCard(
             'Patrimônio Descartado',
             descartado,
-            Colors.black,
+            Colors.red,
             Icons.delete_forever,
           ),
-        ),
-      ],
-    ),
-  );
-}
-Widget _buildResumoCard(
-  BuildContext context,
-  String title,
-  String value,  // Modificado para aceitar String
-  Color color,
-  IconData icon,
-) {
-  return Card(
-    color: Colors.white, // Define o fundo do card como branco
-    elevation: 4, // Adiciona uma leve sombra para destacar o card
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(8.0), // Cantos arredondados para o card
-    ),
-    child: ListTile(
-      leading: Icon(icon, color: color, size: 40),
-      title: Text(
-        title,
-        style: TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: 22,
-          color: color, // Cor do texto correspondente ao parâmetro `color`
+        ],
+      ),
+    );
+  }
+
+  Widget _buildResumoCard(
+    String title,
+    String value,
+    Color color,
+    IconData icon,
+  ) {
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Row(
+          children: [
+            Icon(icon, color: color, size: 40),
+            const SizedBox(width: 16),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: color,
+                  ),
+                ),
+                Text(
+                  value,
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: color,
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
-      trailing: Text(
-        value, // Exibindo como string
-        style: TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: 22,
-          color: color, // Cor do texto correspondente ao parâmetro `color`
-        ),
-      ),
-    ),
-  );
-}
+    );
+  }
 }
