@@ -1,6 +1,6 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class InserirFuncionario extends StatelessWidget {
   final TextEditingController _usuario = TextEditingController();
@@ -53,29 +53,38 @@ class InserirFuncionario extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(kToolbarHeight),
-        child: Container(
+      appBar: AppBar(
+        title: const Text(
+          'Cadastrar Funcionário',
+          style: TextStyle(color: Colors.white),
+        ),
+        flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [Color(0xFF1C3A5C), Color(0xFF004d40), Color(0xFF311B92)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
+              colors: [Color(0xFF2196F3), Color(0xFF0D47A1)],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
             ),
           ),
-          child: AppBar(
-            title: const Text('Cadastrar Funcionário', style: TextStyle(color: Colors.white)),
-            backgroundColor: Colors.transparent, // Mantém o fundo transparente para usar o gradiente
-            elevation: 0, // Removendo a sombra do AppBar
-          ),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
+            onPressed: () {
+              Navigator.pop(context); // Volta para a tela anterior
+            },
+          ),
+        ],
       ),
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color(0xFF1C3A5C), Color(0xFF004d40), Color(0xFF311B92)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Color(0xFF2196F3), // Azul claro
+              Color(0xFF0D47A1), // Azul mais escuro
+            ],
           ),
         ),
         child: Center(
@@ -89,48 +98,49 @@ class InserirFuncionario extends StatelessWidget {
                 children: [
                   TextFormField(
                     controller: _usuario,
-                    style: const TextStyle(color: Colors.white), // Texto dentro do campo branco
+                    style: const TextStyle(color: Colors.white),
                     decoration: InputDecoration(
                       labelText: 'Nome',
                       labelStyle: const TextStyle(color: Colors.white),
-                      fillColor: Colors
-                          .transparent, // Definido como transparente para manter o fundo do campo igual ao da página
+                      prefixIcon: const Icon(Icons.person, color: Colors.white),
+                      fillColor: Colors.white.withOpacity(0.1),
                       filled: true,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(color: Colors.white),
+                        borderSide: BorderSide.none,
                       ),
+                      contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 20),
                   TextFormField(
                     controller: _senha,
-                    style: const TextStyle(color: Colors.white), // Texto dentro do campo branco
+                    style: const TextStyle(color: Colors.white),
                     decoration: InputDecoration(
                       labelText: 'Senha',
                       labelStyle: const TextStyle(color: Colors.white),
-                      fillColor: Colors
-                          .transparent, // Definido como transparente para manter o fundo do campo igual ao da página
+                      prefixIcon: const Icon(Icons.lock, color: Colors.white),
+                      fillColor: Colors.white.withOpacity(0.1),
                       filled: true,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(color: Colors.white),
+                        borderSide: BorderSide.none,
                       ),
+                      contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
                     ),
-                    keyboardType: TextInputType.text,
                     obscureText: true,
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 30),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,
-                      backgroundColor:
-                          const Color(0xFF50E3C2), // Verde claro para o botão
+                      backgroundColor: const Color(0xFF4CAF50), // Verde
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
                       padding: const EdgeInsets.symmetric(vertical: 15),
                       minimumSize: const Size(double.infinity, 50),
+                      elevation: 5, // Sombra sutil
                     ),
                     onPressed: () {
                       _enviarDados(context);

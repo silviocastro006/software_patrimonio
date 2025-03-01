@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:ceetpatrimonio/modelo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'main.dart'; // Import da tela de login
@@ -43,6 +44,7 @@ class _TelaPrincipalAdmState extends State<TelaPrincipalAdm> {
   final List<Widget> _pages = [
     const ResumoPatrimonio(),
     const Inserir(),
+    const Modelo(),
     const Busca(),
     const Movimentacaopatrimonio(),
     InserirFuncionario(),
@@ -86,6 +88,10 @@ class _TelaPrincipalAdmState extends State<TelaPrincipalAdm> {
           BottomNavigationBarItem(
             icon: Icon(Icons.add),
             label: 'Inserir',
+          ),
+               BottomNavigationBarItem(
+            icon: Icon(Icons.add),
+            label: 'Inserir Modelo',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.search),
@@ -200,14 +206,14 @@ class _ResumoPatrimonioState extends State<ResumoPatrimonio> {
           ),
           const SizedBox(height: 20),
           _buildResumoCard(
-            'Patrimônio em Uso',
+            'Patrimônio Alocado',
             usando,
             Colors.green,
             Icons.check_circle,
           ),
           const SizedBox(height: 20),
           _buildResumoCard(
-            'Patrimônio Emprestado',
+            'Patrimônio Realocado (Emprestado)',
             emprestado,
             Colors.orange,
             Icons.group,

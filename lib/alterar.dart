@@ -7,9 +7,10 @@ import 'dart:io';
 class Alterar extends StatefulWidget {
   final Map<String, dynamic> patrimonio;
 
-  const Alterar({Key? key, required this.patrimonio}) : super(key: key);
+  const Alterar({super.key, required this.patrimonio});
 
   @override
+  // ignore: library_private_types_in_public_api
   _AlterarState createState() => _AlterarState();
 }
 
