@@ -17,23 +17,27 @@ class _InserirState extends State<Inserir> {
   final TextEditingController _dataController = TextEditingController();
   final TextEditingController _descricaoController = TextEditingController();
   String? _fotoBase64;
+  Uint8List? _fotoBytes;
 
   List<Map<String, dynamic>> marcas = [];
-  final List<String> modelos = ['Modelo X', 'Modelo Y', 'Modelo Z'];
+  List<Map<String, dynamic>> modelos = []; // Lista para os modelos do banco
   final List<String> setores = ['ADM', 'Radio e TV', 'TI', 'Modelagem'];
-  final List<String> statusList = ['Usando', 'Emprestado', 'Descartado'];
+  final List<String> statusList = [
+    'Alogado',
+    'Realogado (Emprestado)',
+    'Descartado'
+  ];
 
   String? _marcaSelecionada;
   String? _modeloSelecionado;
   String? _setorSelecionado;
   String? _statusSelecionado;
 
-  Uint8List? _fotoBytes;
-
   @override
   void initState() {
     super.initState();
     _carregarMarcas();
+    _carregarModelos(); // Carrega os modelos do banco
   }
 
   Future<void> _carregarMarcas() async {
@@ -61,13 +65,108 @@ class _InserirState extends State<Inserir> {
             });
           }
         } else {
-          print('Erro no backend: ${jsonResponse['message']}');
+          print(
+              'Erro no backend ao carregar marcas: ${jsonResponse['message']}');
         }
       } else {
-        print('Erro na requisição: ${response.statusCode}');
+        print('Erro na requisição ao carregar marcas: ${response.statusCode}');
       }
     } catch (error) {
       print('Erro ao carregar marcas: $error');
+    }
+  }
+
+  Future<void> _carregarModelos() async {
+    const String url = 'http://localhost/server/processa_bdCeet.php';
+
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        body: jsonEncode({
+          'acao': 'listarModelos', // Adicione essa ação no backend
+        }),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      print('_carregarModelos: response.statusCode = ${response.statusCode}');
+      print('_carregarModelos: response.body = ${response.body}');
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+
+        print('_carregarModelos: jsonResponse = $jsonResponse');
+
+        if (jsonResponse['status'] == 'success') {
+          // Ajuste aqui para acessar a lista de modelos corretamente
+          final data = jsonResponse['data']['data'];
+
+          if (data is List) {
+            setState(() {
+              modelos = List<Map<String, dynamic>>.from(data);
+            });
+            print('_carregarModelos: modelos = $modelos');
+          }
+        } else {
+          print(
+              'Erro no backend ao carregar modelos: ${jsonResponse['message']}');
+        }
+      } else {
+        print('Erro na requisição ao carregar modelos: ${response.statusCode}');
+      }
+    } catch (error) {
+      print('Erro ao carregar modelos: $error');
+    }
+  }
+
+  Future<void> _carregarDadosModelo(String modeloSelecionado) async {
+    const String url = 'http://localhost/server/processa_bdCeet.php';
+
+    print('_carregarDadosModelo: Modelo Selecionado = $modeloSelecionado');
+
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        body: jsonEncode({
+          'acao': 'buscarModelos', // Adicione essa ação no backend
+          'modelo': modeloSelecionado,
+        }),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      print(
+          '_carregarDadosModelo: response.statusCode = ${response.statusCode}');
+      print('_carregarDadosModelo: response.body = ${response.body}');
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+
+        print('_carregarDadosModelo: jsonResponse = $jsonResponse');
+
+        if (jsonResponse['status'] == 'success') {
+          // Acesse os dados corretamente
+          final data = jsonResponse['data']['data'];
+
+          _corController.text = data['cor'] ?? '';
+          _descricaoController.text = data['descricao'] ?? '';
+
+          // Decodifique a imagem Base64
+          if (data['imagemModelo'] != null) {
+            _fotoBase64 = data['imagemModelo'];
+            _fotoBytes = base64Decode(data['imagemModelo']);
+          } else {
+            _fotoBase64 = null;
+            _fotoBytes = null;
+          }
+          setState(() {});
+        } else {
+          print('Erro ao buscar dados do modelo: ${jsonResponse['message']}');
+        }
+      } else {
+        print(
+            'Erro na requisição ao buscar dados do modelo: ${response.statusCode}');
+      }
+    } catch (error) {
+      print('Erro ao buscar dados do modelo: $error');
     }
   }
 
@@ -274,13 +373,16 @@ class _InserirState extends State<Inserir> {
                 () => _mostrarDialogAdicionarMarca(context),
               ),
               const SizedBox(height: 20),
-              _buildDropdown(
+              _buildDropdownModelos(
                 'Modelo',
                 _modeloSelecionado,
                 modelos,
-                (newValue) => setState(() {
-                  _modeloSelecionado = newValue;
-                }),
+                (newValue) {
+                  setState(() {
+                    _modeloSelecionado = newValue;
+                  });
+                  _carregarDadosModelo(newValue);
+                },
               ),
               const SizedBox(height: 20),
               _buildDropdown(
@@ -378,6 +480,42 @@ class _InserirState extends State<Inserir> {
     );
   }
 
+  // Novo Dropdown para Modelos do Banco
+  Widget _buildDropdownModelos(
+    String label,
+    String? selectedValue,
+    List<Map<String, dynamic>> items,
+    Function(String) onChanged,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(color: Colors.white, fontSize: 16),
+        ),
+        DropdownButton<String>(
+          isExpanded: true,
+          value: selectedValue,
+          onChanged: (newValue) {
+            if (newValue != null) {
+              onChanged(newValue);
+            }
+          },
+          dropdownColor: Colors.grey[800],
+          style: const TextStyle(color: Colors.white),
+          items:
+              items.map<DropdownMenuItem<String>>((Map<String, dynamic> value) {
+            return DropdownMenuItem<String>(
+              value: value['modelo'],
+              child: Text(value['modelo']),
+            );
+          }).toList(),
+        ),
+      ],
+    );
+  }
+
   Widget _buildDropdown(String label, String? selectedValue, List<String> items,
       Function(String?) onChanged) {
     return Column(
@@ -417,7 +555,8 @@ class _InserirState extends State<Inserir> {
           borderRadius: BorderRadius.circular(10),
           borderSide: BorderSide.none,
         ),
-        contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+        contentPadding:
+            const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
       ),
     );
   }
@@ -435,7 +574,8 @@ class _InserirState extends State<Inserir> {
           borderRadius: BorderRadius.circular(10),
           borderSide: BorderSide.none,
         ),
-        contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+        contentPadding:
+            const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
       ),
       onTap: () => _selecionarData(context),
     );

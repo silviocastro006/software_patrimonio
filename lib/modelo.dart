@@ -12,20 +12,18 @@ class Modelo extends StatefulWidget {
 }
 
 class _ModeloState extends State<Modelo> {
+  final TextEditingController _modeloController =
+      TextEditingController(); // Alterado para um TextField
   final TextEditingController _corController = TextEditingController();
   final TextEditingController _descricaoController = TextEditingController();
   String? _fotoBase64;
-
-  final List<String> modelos = ['Modelo X', 'Modelo Y', 'Modelo Z'];
-
-  String? _modeloSelecionado;
-
   Uint8List? _fotoBytes;
 
   Future<void> _enviarDados(BuildContext context) async {
     const String url = "http://localhost/server/processa_bdCeet.php";
 
-    if ( _modeloSelecionado == null || _corController.text.isEmpty) {
+    if (_modeloController.text.isEmpty || _corController.text.isEmpty) {
+      // Alterado para verificar o TextField
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Por favor, preencha todos os campos obrigatórios!'),
@@ -36,10 +34,10 @@ class _ModeloState extends State<Modelo> {
     }
 
     final Map<String, dynamic> body = {
-      'acao': 'inserir',
-      'modelo': _modeloSelecionado,
+      'acao': 'inserirModelo',
+      'modelo': _modeloController.text, // Enviando o texto do TextField
       'cor': _corController.text,
-      'foto': _fotoBase64 ?? '',
+      'imagemModelo': _fotoBase64 ?? '',
       'descricao': _descricaoController.text,
     };
 
@@ -59,10 +57,11 @@ class _ModeloState extends State<Modelo> {
             ),
           );
           setState(() {
-            _modeloSelecionado = null;
+            _modeloController.clear(); // Limpa o TextField
             _corController.clear();
             _fotoBase64 = null;
             _descricaoController.clear();
+            _fotoBytes = null; // Limpa a foto também
           });
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -134,15 +133,10 @@ class _ModeloState extends State<Modelo> {
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: ListView(
+            padding: EdgeInsets.zero, // Remove o padding superior
             children: [
-              _buildDropdown(
-                'Modelo',
-                _modeloSelecionado,
-                modelos,
-                (newValue) => setState(() {
-                  _modeloSelecionado = newValue;
-                }),
-              ),
+              _buildTextField(
+                  _modeloController, 'Modelo'), // Usando o TextField
               const SizedBox(height: 20),
               _buildTextField(_corController, 'Cor'),
               const SizedBox(height: 20),
@@ -155,7 +149,7 @@ class _ModeloState extends State<Modelo> {
                   width: 200,
                   child: ElevatedButton(
                     onPressed: () => _enviarDados(context),
-                    child: const Text('Adicionar Patrimônio'),
+                    child: const Text('Adicionar Modelo'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF4CAF50), // Verde
                       foregroundColor: Colors.white,
@@ -175,46 +169,25 @@ class _ModeloState extends State<Modelo> {
     );
   }
 
-  Widget _buildDropdown(String label, String? selectedValue, List<String> items,
-      Function(String?) onChanged) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: const TextStyle(color: Colors.white, fontSize: 16),
-        ),
-        DropdownButton<String>(
-          isExpanded: true,
-          value: selectedValue,
-          onChanged: (newValue) => onChanged(newValue),
-          dropdownColor: Colors.grey[800],
-          style: const TextStyle(color: Colors.white),
-          items: items.map<DropdownMenuItem<String>>((String value) {
-            return DropdownMenuItem<String>(
-              value: value,
-              child: Text(value),
-            );
-          }).toList(),
-        ),
-      ],
-    );
-  }
-
   Widget _buildTextField(TextEditingController controller, String label) {
-    return TextField(
-      controller: controller,
-      style: const TextStyle(color: Colors.white),
-      decoration: InputDecoration(
-        labelText: label,
-        labelStyle: const TextStyle(color: Colors.white),
-        filled: true,
-        fillColor: Colors.white.withOpacity(0.1),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide.none,
+    return Padding(
+      // Adiciona um Padding ao redor de cada TextField
+      padding: const EdgeInsets.only(bottom: 10.0), // Espaçamento inferior
+      child: TextField(
+        controller: controller,
+        style: const TextStyle(color: Colors.white),
+        decoration: InputDecoration(
+          labelText: label,
+          labelStyle: const TextStyle(color: Colors.white),
+          filled: true,
+          fillColor: Colors.white.withOpacity(0.1),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide.none,
+          ),
+          contentPadding:
+              const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
         ),
-        contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
       ),
     );
   }
