@@ -31,7 +31,7 @@ class MeuAplicativo extends StatelessWidget {
   MeuAplicativo({super.key});
 
   Future<void> _enviarDados(BuildContext context) async {
-    const String url = "http://localhost/server/processa_bdCeet.php";
+    const String url = "http://localhost/api/processa_bdCeet.php";
     final Map<String, String> data = {
       'acao': 'logar',
       'usuario': _login.text.toUpperCase(),

@@ -9,7 +9,7 @@ class InserirFuncionario extends StatelessWidget {
   InserirFuncionario({Key? key}) : super(key: key);
 
   Future<void> _enviarDados(BuildContext context) async {
-    const String url = "http://localhost/server/processa_bdCeet.php";
+    const String url = "http://localhost/api/processa_bdCeet.php";
     final Map<String, String> data = {
       'acao': 'criaUsuario',
       'usuario': _usuario.text.toUpperCase(),

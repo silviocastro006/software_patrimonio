@@ -19,7 +19,7 @@ class _ListarMarcasState extends State<ListarMarcas> {
   }
 
   Future<void> _carregarMarcas() async {
-    const String url = "http://localhost/server/processa_bdCeet.php";
+    const String url = "http://localhost/api/processa_bdCeet.php";
 
     try {
       final response = await http.post(
@@ -41,7 +41,7 @@ class _ListarMarcasState extends State<ListarMarcas> {
   }
 
   Future<void> _excluirMarca(int id) async {
-    const String url = "http://localhost/server/processa_bdCeet.php";
+    const String url = "http://localhost/api/processa_bdCeet.php";
 
     try {
       final response = await http.post(

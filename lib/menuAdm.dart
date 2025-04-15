@@ -151,7 +151,7 @@ class _ResumoPatrimonioState extends State<ResumoPatrimonio> {
   }
 
   Future<void> _fetchResumoPatrimonio() async {
-    const String url = "http://localhost/server/processa_bdCeet.php";
+    const String url = "http://localhost/api/processa_bdCeet.php";
     final Map<String, dynamic> data = {'acao': 'buscaResumoPatrimonio'};
 
     try {

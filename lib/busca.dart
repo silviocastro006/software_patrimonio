@@ -24,7 +24,7 @@ class _BuscaState extends State<Busca> {
   }
 
   Future<void> _fetchPatrimonios() async {
-    const String url = "http://localhost/server/processa_bdCeet.php";
+    const String url = "http://localhost/api/processa_bdCeet.php";
     final Map<String, String> data = {'acao': 'listar'};
 
     try {
@@ -187,7 +187,7 @@ class _BuscaState extends State<Busca> {
                         leading: ClipRRect(
                           borderRadius: BorderRadius.circular(10),
                           child: Image.network(
-                            'http://localhost/server/' + patrimonio['imagem'],
+                            'http://localhost/api/' + patrimonio['imagem'],
                             width: 50,
                             height: 50,
                             fit: BoxFit.cover,

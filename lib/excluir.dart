@@ -19,7 +19,7 @@ class _ExcluirState extends State<Excluir> {
   }
 
   Future<void> _listarProdutos() async {
-    const String url = "http://localhost/server/processa_bdCeet.php";
+    const String url = "http://localhost/api/processa_bdCeet.php";
     final Map<String, String> data = {
       'acao': 'listar',
     };
@@ -52,7 +52,7 @@ class _ExcluirState extends State<Excluir> {
   }
 
   Future<void> _descartarProduto(int id) async {
-    const String url = "http://localhost/server/processa_bdCeet.php";
+    const String url = "http://localhost/api/processa_bdCeet.php";
     final Map<String, dynamic> data = {
       'acao': 'descartar',
       'id': id,

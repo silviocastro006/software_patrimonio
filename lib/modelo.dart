@@ -20,7 +20,7 @@ class _ModeloState extends State<Modelo> {
   Uint8List? _fotoBytes;
 
   Future<void> _enviarDados(BuildContext context) async {
-    const String url = "http://localhost/server/processa_bdCeet.php";
+    const String url = "http://localhost/api/processa_bdCeet.php";
 
     if (_modeloController.text.isEmpty || _corController.text.isEmpty) {
       // Alterado para verificar o TextField

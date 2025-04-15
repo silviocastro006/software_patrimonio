@@ -52,7 +52,7 @@ class _AlterarState extends State<Alterar> {
   }
 
    Future<void> _carregarMarcas() async {
-    const String url = 'http://localhost/server/processa_bdCeet.php';
+    const String url = 'http://localhost/api/processa_bdCeet.php';
 
     try {
       final response = await http.post(
@@ -102,7 +102,7 @@ class _AlterarState extends State<Alterar> {
       return;
     }
 
-    const String url = "http://localhost/server/processa_bdCeet.php";
+    const String url = "http://localhost/api/processa_bdCeet.php";
     final Map<String, dynamic> data = {
       'acao': 'altera',
       'id': _id,

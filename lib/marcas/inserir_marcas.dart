@@ -13,7 +13,7 @@ class _InserirMarcasState extends State<InserirMarcas> {
   final TextEditingController _marcaController = TextEditingController();
 
   Future<void> _adicionarMarca(BuildContext context) async {
-    const String url = "http://localhost/server/processa_bdCeet.php";
+    const String url = "http://localhost/api/processa_bdCeet.php";
 
     if (_marcaController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(

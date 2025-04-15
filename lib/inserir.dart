@@ -41,7 +41,7 @@ class _InserirState extends State<Inserir> {
   }
 
   Future<void> _carregarMarcas() async {
-    const String url = 'http://localhost/server/processa_bdCeet.php';
+    const String url = 'http://localhost/api/processa_bdCeet.php';
 
     try {
       final response = await http.post(
@@ -77,7 +77,7 @@ class _InserirState extends State<Inserir> {
   }
 
   Future<void> _carregarModelos() async {
-    const String url = 'http://localhost/server/processa_bdCeet.php';
+    const String url = 'http://localhost/api/processa_bdCeet.php';
 
     try {
       final response = await http.post(
@@ -119,7 +119,7 @@ class _InserirState extends State<Inserir> {
   }
 
   Future<void> _carregarDadosModelo(String modeloSelecionado) async {
-    const String url = 'http://localhost/server/processa_bdCeet.php';
+    const String url = 'http://localhost/api/processa_bdCeet.php';
 
     print('_carregarDadosModelo: Modelo Selecionado = $modeloSelecionado');
 
@@ -171,7 +171,7 @@ class _InserirState extends State<Inserir> {
   }
 
   Future<void> _adicionarMarca(String novaMarca) async {
-    const String url = "http://localhost/server/processa_bdCeet.php";
+    const String url = "http://localhost/api/processa_bdCeet.php";
     try {
       final response = await http.post(
         Uri.parse(url),
@@ -189,7 +189,7 @@ class _InserirState extends State<Inserir> {
   }
 
   Future<void> _enviarDados(BuildContext context) async {
-    const String url = "http://localhost/server/processa_bdCeet.php";
+    const String url = "http://localhost/api/processa_bdCeet.php";
 
     if (_marcaSelecionada == null ||
         _modeloSelecionado == null ||
