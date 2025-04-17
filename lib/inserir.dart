@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 
 class Inserir extends StatefulWidget {
-  const Inserir({Key? key}) : super(key: key);
+  const Inserir({super.key});
 
   @override
   _InserirState createState() => _InserirState();
@@ -418,7 +418,6 @@ class _InserirState extends State<Inserir> {
                   width: 200,
                   child: ElevatedButton(
                     onPressed: () => _enviarDados(context),
-                    child: const Text('Adicionar Patrimônio'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF4CAF50), // Verde
                       foregroundColor: Colors.white,
@@ -427,6 +426,7 @@ class _InserirState extends State<Inserir> {
                       ),
                       padding: const EdgeInsets.symmetric(vertical: 15),
                     ),
+                    child: const Text('Adicionar Patrimônio'),
                   ),
                 ),
               ),

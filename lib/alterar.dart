@@ -39,7 +39,7 @@ class _AlterarState extends State<Alterar> {
   void initState() {
     super.initState();
     _id = widget.patrimonio['id']?.toString() ?? '';
-    _marcaSelecionada = widget.patrimonio['marca'] ?? null; // Usa o campo 'nome' da tabela
+    _marcaSelecionada = widget.patrimonio['marca']; // Usa o campo 'nome' da tabela
     _modeloSelecionado = widget.patrimonio['modelo'] ?? '';
     _corController.text = widget.patrimonio['cor'] ?? '';
     _codigoController.text = widget.patrimonio['codigo'] ?? '';

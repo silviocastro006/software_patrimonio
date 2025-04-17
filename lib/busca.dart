@@ -6,7 +6,7 @@ import 'menuAdm.dart'; // Import da tela de menu admin
 import 'alterar.dart'; // Import da tela de alterar
 
 class Busca extends StatefulWidget {
-  const Busca({Key? key}) : super(key: key);
+  const Busca({super.key});
 
   @override
   _BuscaState createState() => _BuscaState();

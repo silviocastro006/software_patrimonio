@@ -6,7 +6,7 @@ class InserirFuncionario extends StatelessWidget {
   final TextEditingController _usuario = TextEditingController();
   final TextEditingController _senha = TextEditingController();
 
-  InserirFuncionario({Key? key}) : super(key: key);
+  InserirFuncionario({super.key});
 
   Future<void> _enviarDados(BuildContext context) async {
     const String url = "http://localhost/api/processa_bdCeet.php";

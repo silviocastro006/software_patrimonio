@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class InserirMarcas extends StatefulWidget {
-  const InserirMarcas({Key? key}) : super(key: key);
+  const InserirMarcas({super.key});
 
   @override
   _InserirMarcasState createState() => _InserirMarcasState();

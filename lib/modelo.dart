@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 
 class Modelo extends StatefulWidget {
-  const Modelo({Key? key}) : super(key: key);
+  const Modelo({super.key});
 
   @override
   _ModeloState createState() => _ModeloState();
@@ -149,7 +149,6 @@ class _ModeloState extends State<Modelo> {
                   width: 200,
                   child: ElevatedButton(
                     onPressed: () => _enviarDados(context),
-                    child: const Text('Adicionar Modelo'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF4CAF50), // Verde
                       foregroundColor: Colors.white,
@@ -158,6 +157,7 @@ class _ModeloState extends State<Modelo> {
                       ),
                       padding: const EdgeInsets.symmetric(vertical: 15),
                     ),
+                    child: const Text('Adicionar Modelo'),
                   ),
                 ),
               ),

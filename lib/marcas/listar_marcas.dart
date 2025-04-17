@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class ListarMarcas extends StatefulWidget {
-  const ListarMarcas({Key? key}) : super(key: key);
+  const ListarMarcas({super.key});
 
   @override
   _ListarMarcasState createState() => _ListarMarcasState();

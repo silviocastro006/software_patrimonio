@@ -5,7 +5,7 @@ import 'inserir.dart';
 import 'excluir.dart';
 
 class Menu extends StatelessWidget {
-  const Menu({Key? key}) : super(key: key);
+  const Menu({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +20,7 @@ class Menu extends StatelessWidget {
 }
 
 class TelaPrincipal extends StatefulWidget {
-  const TelaPrincipal({Key? key}) : super(key: key);
+  const TelaPrincipal({super.key});
 
   @override
   _TelaPrincipalState createState() => _TelaPrincipalState();
@@ -75,8 +75,8 @@ class _TelaPrincipalState extends State<TelaPrincipal> {
             (Route<dynamic> route) => false,
           );
         },
-        child: const Icon(Icons.exit_to_app, color: Colors.white),
         tooltip: 'Sair',
+        child: const Icon(Icons.exit_to_app, color: Colors.white),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );

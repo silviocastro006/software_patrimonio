@@ -12,7 +12,7 @@ import 'package:http/http.dart' as http;
 import 'movimentacaoPatrimonio.dart';
 
 class MenuAdm extends StatelessWidget {
-  const MenuAdm({Key? key}) : super(key: key);
+  const MenuAdm({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +32,7 @@ class MenuAdm extends StatelessWidget {
 }
 
 class TelaPrincipalAdm extends StatefulWidget {
-  const TelaPrincipalAdm({Key? key}) : super(key: key);
+  const TelaPrincipalAdm({super.key});
 
   @override
   _TelaPrincipalAdmState createState() => _TelaPrincipalAdmState();
@@ -122,8 +122,8 @@ class _TelaPrincipalAdmState extends State<TelaPrincipalAdm> {
               (Route<dynamic> route) => false,
             );
           },
-          child: const Icon(Icons.exit_to_app, color: Colors.white),
           tooltip: 'Sair',
+          child: const Icon(Icons.exit_to_app, color: Colors.white),
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
@@ -132,7 +132,7 @@ class _TelaPrincipalAdmState extends State<TelaPrincipalAdm> {
 }
 
 class ResumoPatrimonio extends StatefulWidget {
-  const ResumoPatrimonio({Key? key}) : super(key: key);
+  const ResumoPatrimonio({super.key});
 
   @override
   _ResumoPatrimonioState createState() => _ResumoPatrimonioState();

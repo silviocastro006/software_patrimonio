@@ -6,7 +6,7 @@ import 'menuAdm.dart'; // Import da tela de menu admin
 import 'alterar.dart'; // Import da tela de alterar
 
 class Movimentacaopatrimonio extends StatefulWidget {
-  const Movimentacaopatrimonio({Key? key}) : super(key: key);
+  const Movimentacaopatrimonio({super.key});
 
   @override
   _BuscaState createState() => _BuscaState();

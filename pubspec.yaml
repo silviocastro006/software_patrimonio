@@ -11,14 +11,17 @@ dependencies:
   flutter:
     sdk: flutter
   http: ^1.2.2
-  image_picker: ^0.8.7 # Verifique no pub.dev se esta é a versão mais recente
+  image_picker: ^1.1.2 # Verifique no pub.dev se esta é a versão mais recente
   cupertino_icons: ^1.0.8
   file_selector: ^1.0.3
+
+dependency_overrides:
+  file_selector_android: ^0.5.0 # força uma versão compatível
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^4.0.0
+  flutter_lints: ^5.0.0
 
 flutter:
   uses-material-design: true

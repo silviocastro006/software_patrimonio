@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class Excluir extends StatefulWidget {
-  const Excluir({Key? key}) : super(key: key);
+  const Excluir({super.key});
 
   @override
   _ExcluirState createState() => _ExcluirState();
