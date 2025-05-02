@@ -85,11 +85,11 @@ class _ExcluirState extends State<Excluir> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Erro'),
+          title: const Text('Erro'),
           content: Text(message),
           actions: <Widget>[
             TextButton(
-              child: Text('OK'),
+              child: const Text('OK'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -105,11 +105,11 @@ class _ExcluirState extends State<Excluir> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Sucesso'),
+          title: const Text('Sucesso'),
           content: Text(message),
           actions: <Widget>[
             TextButton(
-              child: Text('OK'),
+              child: const Text('OK'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -126,21 +126,35 @@ class _ExcluirState extends State<Excluir> {
       appBar: AppBar(
         title: const Text(
           'Excluir Produto',
-          style: TextStyle(
-              color: Colors.white), // Define a cor do texto como branco
+          style: TextStyle(color: Colors.white),
         ),
-        backgroundColor: const Color(0xFF1C3A5C), // Cor do AppBar
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xFF2196F3), Color(0xFF0D47A1)],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ),
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
+            onPressed: () {
+              Navigator.pop(context); // Volta para a tela anterior
+            },
+          ),
+        ],
       ),
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
             colors: [
-              Color(0xFF1C3A5C),
-              Color(0xFF004d40),
-              Color(0xFF311B92)
-            ], // Cores do gradiente de fundo
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+              Color(0xFF2196F3), // Azul claro
+              Color(0xFF0D47A1), // Azul mais escuro
+            ],
           ),
         ),
         child: ListView.builder(
@@ -149,19 +163,27 @@ class _ExcluirState extends State<Excluir> {
           itemBuilder: (context, index) {
             final produto = _produtos[index];
             return Card(
-              color: Colors.white.withOpacity(0.8),
-              margin: const EdgeInsets.symmetric(vertical: 10),
+              color: Colors.white.withOpacity(0.1),
+              margin: const EdgeInsets.symmetric(vertical: 8),
+              elevation: 4,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
               child: ListTile(
+                contentPadding: const EdgeInsets.all(16.0),
                 title: Text(
                   produto['marca'],
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
                 ),
-                subtitle: Text('Modelo: ${produto['modelo']}'),
+                subtitle: Text(
+                  'Modelo: ${produto['modelo']}',
+                  style: const TextStyle(color: Colors.white),
+                ),
                 trailing: IconButton(
-                  icon: Icon(Icons.delete, color: Colors.red),
+                  icon: const Icon(Icons.delete, color: Colors.red),
                   onPressed: () {
                     _descartarProduto(produto['id']);
                   },
