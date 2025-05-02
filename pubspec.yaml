@@ -22,3 +22,8 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  # To add assets to your application, add an assets section, like this:
+  assets:
+    #- assets/ # Esta linha permite que o Flutter acesse TUDO dentro da pasta assets
+    # Se quisesse especificar apenas a imagem:
+    - assets/logo_patri.png
